@@ -3,24 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#f3f5f9" />
+  <meta name="description" content="Simple customer ledger for bills and received payments." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Daily Katha" />
   <title>Daily Katha</title>
 
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="preload" href="vendor/fonts/poppins-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="vendor/fonts/poppins-semibold.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="vendor/boxicons/css/boxicons.min.css" />
+
   <style>
+    @font-face {
+      font-family: "Poppins";
+      font-weight: 400;
+      font-display: swap;
+      src: url(vendor/fonts/poppins-regular.woff2) format("woff2");
+    }
+
+    @font-face {
+      font-family: "Poppins";
+      font-weight: 500;
+      font-display: swap;
+      src: url(vendor/fonts/poppins-medium.woff2) format("woff2");
+    }
+
+    @font-face {
+      font-family: "Poppins";
+      font-weight: 600;
+      font-display: swap;
+      src: url(vendor/fonts/poppins-semibold.woff2) format("woff2");
+    }
+
+    @font-face {
+      font-family: "Poppins";
+      font-weight: 700;
+      font-display: swap;
+      src: url(vendor/fonts/poppins-bold.woff2) format("woff2");
+    }
+
     :root {
-      --bg: #f4f6f8;
+      --bg: #f3f5f9;
       --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --primary: #111827;
-      --primary-soft: #eef2ff;
+      --text: #0f172a;
+      --text-2: #334155;
+      --muted: #64748b;
+      --faint: #94a3b8;
+      --border: #e5e9f0;
+      --field: #f8fafc;
+      --primary: #0f172a;
+      --accent: #4f46e5;
+      --accent-soft: #eef2ff;
       --green: #15803d;
-      --green-soft: #dcfce7;
+      --green-soft: #ecfdf3;
       --red: #dc2626;
-      --red-soft: #fee2e2;
-      --shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
-      --radius: 18px;
+      --red-soft: #fef2f2;
+      --amber: #92400e;
+      --amber-soft: #fffbeb;
+      --series-1: #2a78d6;
+      --series-2: #eb6834;
+      --grid: #edf0f5;
+      --shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 10px 28px rgba(15, 23, 42, .06);
+      --radius: 20px;
     }
 
     * {
@@ -28,12 +76,17 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 14px;
     }
 
     body {
@@ -48,37 +101,87 @@
       cursor: pointer;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
     .app {
       width: 100%;
       max-width: 520px;
       min-height: 100vh;
       margin: 0 auto;
-      padding-bottom: 84px;
+      padding-bottom: calc(96px + env(safe-area-inset-bottom));
     }
+
+    /* ---------- Header ---------- */
 
     .topbar {
       position: sticky;
       top: 0;
       z-index: 10;
-      padding: 18px 16px 14px;
-      background: rgba(244, 246, 248, 0.94);
-      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px 12px;
+      background: rgba(243, 245, 249, .92);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand-logo {
+      flex: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .18);
+    }
+
+    .topbar-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .brand-name {
+      color: var(--accent);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
     }
 
     .topbar h1 {
       margin: 0;
-      font-size: 24px;
-      line-height: 1.2;
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.25;
     }
 
-    .topbar p {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 13px;
+    .icon-btn {
+      flex: none;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 22px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    }
+
+    .icon-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
     }
 
     main {
-      padding: 0 16px;
+      padding: 2px 16px 0;
     }
 
     .tab {
@@ -87,80 +190,193 @@
 
     .tab.active {
       display: block;
-      animation: fade .18s ease;
+      animation: fade .2s ease;
     }
 
     @keyframes fade {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* ---------- Cards & forms ---------- */
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+      scroll-margin-top: 90px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
       margin-bottom: 14px;
     }
 
     .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin: 0 0 14px;
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .card-head .section-title {
+      margin: 0;
+    }
+
+    .section-title .bx {
+      color: var(--accent);
+      font-size: 20px;
+    }
+
+    .card-hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .card-text {
+      margin: -6px 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
     }
 
     .field {
-      margin-bottom: 13px;
+      margin-bottom: 14px;
     }
 
     .field:last-child {
       margin-bottom: 0;
     }
 
-    label {
+    label, .label {
       display: block;
       margin-bottom: 7px;
-      font-size: 13px;
-      font-weight: 650;
-      color: #374151;
+      color: var(--text-2);
+      font-size: 12.5px;
+      font-weight: 500;
     }
 
     input, select, textarea {
       width: 100%;
-      min-height: 48px;
-      padding: 12px 13px;
-      border: 1px solid #d6dae1;
-      border-radius: 13px;
+      min-height: 50px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
       outline: none;
-      background: #fff;
+      background: var(--field);
       color: var(--text);
       font-size: 15px;
+      transition: border-color .15s, box-shadow .15s, background .15s;
     }
 
-    textarea {
-      min-height: 82px;
-      resize: vertical;
+    select {
+      appearance: none;
+      padding-right: 40px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: #64748b;
-      box-shadow: 0 0 0 3px rgba(100, 116, 139, .12);
+      border-color: var(--accent);
+      background-color: #fff;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, .12);
+    }
+
+    input[type="date"] {
+      padding-left: 12px;
+      padding-right: 10px;
+      font-size: 14px;
+    }
+
+    input::placeholder {
+      color: var(--faint);
+    }
+
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon .bx {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--faint);
+      font-size: 19px;
+      pointer-events: none;
+    }
+
+    .input-icon input {
+      padding-left: 42px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 359px) {
+      .two-col {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+      }
+    }
+
+    .primary-btn, .secondary-btn {
+      width: 100%;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 14px;
+      font-weight: 600;
+      transition: transform .1s, box-shadow .15s;
     }
 
     .primary-btn {
-      width: 100%;
-      min-height: 49px;
       border: 0;
-      border-radius: 13px;
       background: var(--primary);
       color: #fff;
-      font-weight: 700;
-      margin-top: 4px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .18);
     }
 
-    .primary-btn:active {
-      transform: scale(.99);
+    .secondary-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .text-btn {
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .primary-btn .bx, .secondary-btn .bx {
+      font-size: 20px;
+    }
+
+    .primary-btn:active, .secondary-btn:active {
+      transform: scale(.985);
+    }
+
+    .form-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 6px;
     }
 
     .segmented {
@@ -168,70 +384,70 @@
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-bottom: 14px;
+      padding: 4px;
+      border-radius: 16px;
+      background: var(--field);
+      border: 1px solid var(--border);
     }
 
     .segmented button {
-      min-height: 46px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: #fff;
-      color: #4b5563;
-      font-weight: 700;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 600;
     }
 
     .segmented button.active.bill {
-      background: var(--red-soft);
+      background: #fff;
       color: var(--red);
-      border-color: #fecaca;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, .14);
     }
 
     .segmented button.active.receive {
-      background: var(--green-soft);
+      background: #fff;
       color: var(--green);
-      border-color: #bbf7d0;
+      box-shadow: 0 2px 8px rgba(21, 128, 61, .14);
     }
 
     .customer-summary {
       display: none;
+      align-items: center;
+      gap: 12px;
       padding: 12px;
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 14px;
       margin-bottom: 14px;
+      background: var(--field);
+      border: 1px solid var(--border);
+      border-radius: 16px;
     }
 
     .customer-summary.show {
-      display: block;
-    }
-
-    .customer-name {
-      font-weight: 800;
-      font-size: 15px;
-    }
-
-    .customer-meta {
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .balance-row {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed #d8dee8;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
-    .balance-label {
+    .customer-summary .list-main {
+      flex: 1;
+    }
+
+    .summary-balance {
+      text-align: right;
+    }
+
+    .summary-balance span {
+      display: block;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .balance-value {
-      font-size: 16px;
-      font-weight: 800;
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     .balance-value.positive {
@@ -242,50 +458,105 @@
       color: var(--green);
     }
 
+    /* ---------- Lists ---------- */
+
     .empty {
       text-align: center;
-      padding: 28px 12px;
+      padding: 26px 12px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13.5px;
+      line-height: 1.5;
     }
 
-    .customer-item, .transaction-item {
-      padding: 13px 0;
+    .empty .bx {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 10px;
+      border-radius: 18px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 28px;
+    }
+
+    .list-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 12px;
+      padding: 14px 0;
       border-bottom: 1px solid var(--border);
     }
 
-    .customer-item:first-child, .transaction-item:first-child {
-      padding-top: 0;
+    .list-item:first-child {
+      padding-top: 2px;
     }
 
-    .customer-item:last-child, .transaction-item:last-child {
+    .list-item:last-child {
       border-bottom: 0;
       padding-bottom: 0;
     }
 
-    .row {
+    .avatar, .txn-icon {
+      flex: none;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .txn-icon {
+      font-size: 22px;
+    }
+
+    .txn-icon.bill {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .txn-icon.receive {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .list-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-row {
       display: flex;
-      align-items: flex-start;
+      align-items: baseline;
       justify-content: space-between;
       gap: 10px;
     }
 
+    .list-row > :first-child {
+      min-width: 0;
+    }
+
     .item-title {
-      font-size: 14px;
-      font-weight: 750;
+      font-size: 14.5px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
     }
 
     .item-sub {
-      margin-top: 4px;
+      margin-top: 2px;
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.4;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
     }
 
     .amount {
       font-size: 15px;
-      font-weight: 800;
+      font-weight: 700;
       white-space: nowrap;
+      text-align: right;
     }
 
     .amount.bill {
@@ -296,13 +567,578 @@
       color: var(--green);
     }
 
-    .delete-btn {
-      border: 0;
-      background: transparent;
+    .pill {
+      flex: none;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .pill.bill {
+      background: var(--red-soft);
       color: var(--red);
-      padding: 7px 0 0;
+    }
+
+    .pill.receive {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .running-balance {
+      flex: none;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .item-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 32px;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .chip-btn .bx {
+      font-size: 16px;
+    }
+
+    .chip-btn.danger {
+      color: var(--red);
+    }
+
+    .pager {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .pager-info {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .pager-pages {
+      display: flex;
+      gap: 4px;
+    }
+
+    .page-btn {
+      min-width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      padding: 0 6px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #fff;
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .page-btn .bx {
+      font-size: 20px;
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .page-btn:disabled {
+      opacity: .4;
+      cursor: default;
+    }
+
+    .page-gap {
+      align-self: center;
+      color: var(--faint);
+      font-size: 13px;
+    }
+
+    .history-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      background: var(--field);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .summary-cell {
+      min-width: 0;
+    }
+
+    .summary-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .summary-cell strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+      white-space: normal;
+      text-align: left;
+    }
+
+    /* ---------- Banner ---------- */
+
+    .banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 12px 12px 14px;
+      margin-bottom: 14px;
+      border: 1px solid #fde68a;
+      border-radius: 16px;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-size: 12.5px;
+    }
+
+    .banner > .bx {
+      flex: none;
+      font-size: 22px;
+    }
+
+    .banner-text {
+      flex: 1;
+      min-width: 0;
+      line-height: 1.4;
+    }
+
+    .banner button {
+      flex: none;
+      min-height: 36px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--amber);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ---------- Reports ---------- */
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      margin: 0 -18px 14px;
+      padding: 0 18px 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      flex: none;
+      min-height: 36px;
+      padding: 0 15px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 14px;
+      padding: 20px;
+      border-radius: 24px;
+      color: #fff;
+      background:
+        radial-gradient(120% 140% at 100% 0%, #6366f1 0%, rgba(99, 102, 241, 0) 55%),
+        linear-gradient(160deg, #1e1b4b 0%, #0f172a 70%);
+      box-shadow: 0 18px 36px rgba(30, 27, 75, .28);
+    }
+
+    .hero::after {
+      content: "₹";
+      position: absolute;
+      right: -6px;
+      bottom: -58px;
+      font-size: 190px;
+      font-weight: 700;
+      line-height: 1;
+      opacity: .07;
+      pointer-events: none;
+    }
+
+    .hero-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, .78);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .hero-value {
+      margin-top: 4px;
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      overflow-wrap: anywhere;
+    }
+
+    .hero-sub {
+      margin-top: 4px;
+      color: rgba(255, 255, 255, .62);
       font-size: 12px;
     }
+
+    .hero-split {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .hero-split > div + div {
+      padding-left: 14px;
+      border-left: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .hero-split span {
+      display: block;
+      color: rgba(255, 255, 255, .62);
+      font-size: 11.5px;
+    }
+
+    .hero-split strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 15px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .kpi {
+      min-width: 0;
+      padding: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 10px;
+      border-radius: 11px;
+      font-size: 19px;
+    }
+
+    .kpi-icon.bill { background: var(--red-soft); color: var(--red); }
+    .kpi-icon.receive { background: var(--green-soft); color: var(--green); }
+    .kpi-icon.accent { background: var(--accent-soft); color: var(--accent); }
+    .kpi-icon.neutral { background: #f1f5f9; color: var(--text-2); }
+
+    .kpi-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .kpi-value {
+      margin-top: 1px;
+      font-size: 17px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .kpi-sub {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .progress {
+      height: 6px;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: var(--grid);
+      overflow: hidden;
+    }
+
+    .progress > div {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      color: var(--text-2);
+      font-size: 12px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend i {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    .chart-wrap {
+      position: relative;
+    }
+
+    .chart-wrap svg {
+      display: block;
+      overflow: visible;
+    }
+
+    .chart-wrap .axis {
+      fill: var(--muted);
+      font-size: 10.5px;
+      font-family: inherit;
+    }
+
+    .chart-wrap .hit {
+      fill: transparent;
+      cursor: pointer;
+    }
+
+    .chart-wrap .hit.active {
+      fill: rgba(15, 23, 42, .04);
+    }
+
+    .chart-tip {
+      position: absolute;
+      z-index: 2;
+      min-width: 150px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 12px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, .24);
+      pointer-events: none;
+      transform: translateX(-50%);
+    }
+
+    .chart-tip strong {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .chart-tip div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .chart-tip i {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 6px;
+      border-radius: 2px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-item {
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+    }
+
+    .bar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .bar-top span:first-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .bar-top strong {
+      flex: none;
+      font-weight: 600;
+    }
+
+    .bar-track {
+      height: 8px;
+      margin-top: 6px;
+      border-radius: 999px;
+      background: var(--grid);
+      overflow: hidden;
+    }
+
+    .bar-track > div {
+      height: 100%;
+      min-width: 4px;
+      border-radius: 999px;
+    }
+
+    .export-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .export-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-height: 112px;
+      padding: 14px 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #fff;
+      color: var(--text);
+      transition: transform .1s, border-color .15s;
+    }
+
+    .export-tile:active {
+      transform: scale(.97);
+    }
+
+    .export-tile:disabled {
+      opacity: .6;
+    }
+
+    .export-icon {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      font-size: 26px;
+    }
+
+    .export-icon.pdf { background: var(--red-soft); color: var(--red); }
+    .export-icon.xlsx { background: var(--green-soft); color: var(--green); }
+    .export-icon.csv { background: #f1f5f9; color: var(--text-2); }
+    .export-icon.json { background: var(--accent-soft); color: var(--accent); }
+
+    .export-tile strong {
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .export-tile span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* ---------- Backup ---------- */
+
+    .backup-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      background: var(--field);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 13px;
+    }
+
+    .backup-status .bx {
+      flex: none;
+      font-size: 20px;
+    }
+
+    .backup-status.ok .bx {
+      color: var(--green);
+    }
+
+    .backup-status.warn .bx {
+      color: var(--amber);
+    }
+
+    .small-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    /* ---------- Bottom navigation ---------- */
 
     .bottom-nav {
       position: fixed;
@@ -311,56 +1147,72 @@
       transform: translateX(-50%);
       z-index: 30;
       width: min(520px, 100%);
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-      background: rgba(255,255,255,.95);
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, .96);
       border-top: 1px solid var(--border);
       backdrop-filter: blur(14px);
     }
 
     .nav-inner {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 4px;
     }
 
     .nav-btn {
-      min-height: 56px;
-      border: 0;
-      border-radius: 15px;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 700;
+      min-width: 0;
+      min-height: 58px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 3px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 500;
+      white-space: nowrap;
     }
 
-    .nav-btn .icon {
-      font-size: 19px;
-      line-height: 1;
+    .nav-icon {
+      width: 56px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-size: 22px;
+      transition: background .2s, color .2s;
     }
 
     .nav-btn.active {
-      background: #f1f5f9;
-      color: var(--primary);
+      color: var(--text);
+      font-weight: 600;
     }
+
+    .nav-btn.active .nav-icon {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* ---------- Toast & sheet ---------- */
 
     .toast {
       position: fixed;
       left: 50%;
-      bottom: 90px;
+      bottom: calc(96px + env(safe-area-inset-bottom));
       transform: translateX(-50%) translateY(15px);
       z-index: 100;
       width: calc(100% - 32px);
       max-width: 480px;
-      padding: 12px 14px;
-      border-radius: 13px;
-      background: #111827;
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: var(--primary);
       color: #fff;
       text-align: center;
       font-size: 13px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, .22);
       opacity: 0;
       pointer-events: none;
       transition: .2s;
@@ -371,11 +1223,75 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    .small-note {
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(15, 23, 42, .45);
+      animation: fadeIn .2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+    }
+
+    .sheet {
+      width: min(520px, 100%);
+      padding: 10px 18px calc(18px + env(safe-area-inset-bottom));
+      border-radius: 26px 26px 0 0;
+      background: #fff;
+      animation: slideUp .25s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+    }
+
+    .sheet-handle {
+      width: 42px;
+      height: 5px;
+      margin: 0 auto 16px;
+      border-radius: 999px;
+      background: var(--border);
+    }
+
+    .sheet-title {
+      margin: 0 0 14px;
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .file-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--field);
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 13.5px;
+      overflow-wrap: anywhere;
+    }
+
+    .file-meta {
       color: var(--muted);
-      font-size: 11px;
-      margin-top: 7px;
-      line-height: 1.4;
+      font-size: 12px;
+    }
+
+    .spin {
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -383,214 +1299,638 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <h1 id="pageTitle">Add Customer</h1>
-      <p id="pageSubtitle">Save customer details for future billing.</p>
+      <img class="brand-logo" src="icons/icon-192.png" alt="Daily Katha" />
+
+      <div class="topbar-text">
+        <div class="brand-name">Daily Katha</div>
+        <h1 id="pageTitle">Customers</h1>
+      </div>
+
+      <button type="button" class="icon-btn" data-tab="backupTab"
+              aria-label="Backup and restore" title="Backup and restore">
+        <i class="bx bx-cloud-upload"></i>
+      </button>
     </header>
 
     <main>
-      <!-- TAB 1 -->
+      <!-- CUSTOMERS -->
       <section id="customersTab" class="tab active">
-        <div class="card">
-          <h2 class="section-title">Customer Details</h2>
+        <div id="backupReminder" class="banner" hidden>
+          <i class="bx bx-error"></i>
+          <div class="banner-text" id="backupReminderText"></div>
+          <button type="button" data-tab="backupTab">Back up</button>
+        </div>
+
+        <div class="card" id="customerFormCard">
+          <h2 class="section-title" id="customerFormTitle"></h2>
 
           <form id="customerForm">
             <div class="field">
               <label for="customerName">Name</label>
-              <input id="customerName" type="text" placeholder="Enter customer name" required />
+              <input id="customerName" type="text" placeholder="Enter customer name"
+                     autocomplete="off" required />
             </div>
 
             <div class="field">
               <label for="customerAddress">Address</label>
-              <textarea id="customerAddress" placeholder="Enter address"></textarea>
+              <input id="customerAddress" type="text" placeholder="Enter address" autocomplete="off" />
             </div>
 
             <div class="field">
               <label for="customerPhone">Phone Number</label>
               <input id="customerPhone" type="tel" inputmode="numeric"
-                     placeholder="Enter phone number" maxlength="15" />
+                     placeholder="Enter phone number" maxlength="15" autocomplete="off" />
             </div>
 
-            <button class="primary-btn" type="submit">+ Add Customer</button>
+            <div class="form-actions">
+              <button class="primary-btn" type="submit" id="customerSubmitBtn"></button>
+              <button class="secondary-btn" type="button" id="customerCancelBtn" hidden>
+                <i class="bx bx-x"></i> Cancel
+              </button>
+            </div>
           </form>
         </div>
 
         <div class="card">
-          <h2 class="section-title">Customers</h2>
+          <div class="card-head">
+            <h2 class="section-title"><i class="bx bx-group"></i> Customers</h2>
+            <span class="card-hint" id="customerCount"></span>
+          </div>
+
+          <div class="field input-icon" id="customerSearchField">
+            <i class="bx bx-search"></i>
+            <input id="customerSearch" type="search" placeholder="Search by name or phone"
+                   aria-label="Search customers" autocomplete="off" />
+          </div>
+
           <div id="customerList"></div>
         </div>
       </section>
 
-      <!-- TAB 2 -->
+      <!-- ADD ENTRY -->
       <section id="transactionsTab" class="tab">
         <div class="card">
-          <h2 class="section-title">Add Transaction</h2>
+          <h2 class="section-title" id="transactionFormTitle"></h2>
 
           <div class="field">
-            <label for="customerSelect">Select Customer</label>
+            <label for="customerSelect">Customer</label>
             <select id="customerSelect">
               <option value="">Select a customer</option>
             </select>
           </div>
 
           <div id="customerSummary" class="customer-summary">
-            <div class="customer-name" id="summaryName"></div>
-            <div class="customer-meta" id="summaryMeta"></div>
-
-            <div class="balance-row">
-              <span class="balance-label">Current balance</span>
-              <span class="balance-value" id="summaryBalance"></span>
+            <div class="avatar" id="summaryAvatar"></div>
+            <div class="list-main">
+              <div class="item-title" id="summaryName"></div>
+              <div class="item-sub" id="summaryMeta"></div>
+            </div>
+            <div class="summary-balance">
+              <span>Balance</span>
+              <div class="balance-value" id="summaryBalance"></div>
             </div>
           </div>
 
-          <label>Transaction Type</label>
-          <div class="segmented">
-            <button type="button" id="billBtn" class="active bill">Bill Amount</button>
+          <span class="label" id="transactionTypeLabel">Entry type</span>
+          <div class="segmented" role="group" aria-labelledby="transactionTypeLabel">
+            <button type="button" id="billBtn">Bill Amount</button>
             <button type="button" id="receiveBtn">Receive Amount</button>
           </div>
 
           <form id="transactionForm">
             <div class="field">
-              <label for="amount">Amount</label>
+              <label for="amount">Amount (₹)</label>
               <input id="amount" type="number" inputmode="decimal" min="0.01"
                      step="0.01" placeholder="0.00" required />
             </div>
 
-            <div class="field">
-              <label for="paymentType">Type of Payment</label>
-              <select id="paymentType">
-                <option value="Cash">Cash</option>
-                <option value="UPI">UPI</option>
-                <option value="Card">Card</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+            <div class="two-col field">
+              <div>
+                <label for="paymentType">Payment mode</label>
+                <select id="paymentType">
+                  <option value="Cash">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Card">Card</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
 
-            <div class="field">
-              <label for="transactionDate">Date</label>
-              <input id="transactionDate" type="date" required />
+              <div>
+                <label for="transactionDate">Date</label>
+                <input id="transactionDate" type="date" required />
+              </div>
             </div>
 
             <div class="field">
               <label for="notes">Notes (optional)</label>
-              <input id="notes" type="text" placeholder="e.g. Monthly bill" />
+              <input id="notes" type="text" placeholder="e.g. Monthly bill" autocomplete="off" />
             </div>
 
-            <button class="primary-btn" type="submit">Save Transaction</button>
+            <div class="form-actions">
+              <button class="primary-btn" type="submit" id="transactionSubmitBtn"></button>
+              <button class="secondary-btn" type="button" id="transactionCancelBtn" hidden>
+                <i class="bx bx-x"></i> Cancel
+              </button>
+            </div>
           </form>
         </div>
-
       </section>
 
-      <!-- TAB 3 -->
+      <!-- HISTORY -->
       <section id="historyTab" class="tab">
         <div class="card">
-          <h2 class="section-title">Transaction History</h2>
+          <h2 class="section-title"><i class="bx bx-receipt"></i> Transaction History</h2>
 
           <div class="field">
-            <label for="historyCustomerFilter">Filter by Customer</label>
+            <label for="historyCustomerFilter">Filter by customer</label>
             <select id="historyCustomerFilter">
               <option value="">All Customers</option>
             </select>
           </div>
 
+          <div id="historySummary" class="history-summary" hidden></div>
           <div id="transactionList"></div>
+          <nav class="pager" id="historyPager" aria-label="History pages" hidden></nav>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="reportsTab" class="tab">
+        <div class="card">
+          <h2 class="section-title"><i class="bx bx-calendar"></i> Report period</h2>
+
+          <div class="chips" id="periodChips" role="group" aria-label="Report period">
+            <button type="button" class="chip" data-period="this-month">This month</button>
+            <button type="button" class="chip" data-period="last-month">Last month</button>
+            <button type="button" class="chip" data-period="this-fy">This FY</button>
+            <button type="button" class="chip" data-period="all">All time</button>
+            <button type="button" class="chip" data-period="custom">Custom</button>
+          </div>
+
+          <div class="two-col field" id="customRange" hidden>
+            <div>
+              <label for="reportFrom">From</label>
+              <input id="reportFrom" type="date" />
+            </div>
+            <div>
+              <label for="reportTo">To</label>
+              <input id="reportTo" type="date" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="reportCustomer">Customer</label>
+            <select id="reportCustomer">
+              <option value="">All customers</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hero" id="reportHero"></div>
+        <div class="kpis" id="reportKpis"></div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2 class="section-title"><i class="bx bx-bar-chart-alt-2"></i> Last 6 months</h2>
+            <div class="legend">
+              <span><i style="background:var(--series-1)"></i>Received</span>
+              <span><i style="background:var(--series-2)"></i>Billed</span>
+            </div>
+          </div>
+          <div class="chart-wrap" id="trendChart"></div>
+        </div>
+
+        <div class="card" id="topDuesCard">
+          <div class="card-head">
+            <h2 class="section-title"><i class="bx bx-trending-up"></i> Highest dues</h2>
+            <span class="card-hint">Tap to view statement</span>
+          </div>
+          <div class="bar-list" id="topDues"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title"><i class="bx bx-credit-card"></i> Received by payment mode</h2>
+          <div class="bar-list" id="paymentModes"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title"><i class="bx bx-export"></i> Download report</h2>
+          <p class="card-text" id="exportHint"></p>
+
+          <div class="export-grid">
+            <button type="button" class="export-tile" data-export="pdf">
+              <div class="export-icon pdf"><i class="bx bxs-file-pdf"></i></div>
+              <strong>PDF</strong>
+              <span>To share</span>
+            </button>
+            <button type="button" class="export-tile" data-export="xlsx">
+              <div class="export-icon xlsx"><i class="bx bxs-spreadsheet"></i></div>
+              <strong>Excel</strong>
+              <span>For accounts</span>
+            </button>
+            <button type="button" class="export-tile" data-export="csv">
+              <div class="export-icon csv"><i class="bx bxs-file-txt"></i></div>
+              <strong>CSV</strong>
+              <span>Raw data</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BACKUP (opened from the header button) -->
+      <section id="backupTab" class="tab">
+        <div class="card">
+          <h2 class="section-title"><i class="bx bx-shield-quarter"></i> Back up your ledger</h2>
+          <p class="card-text">
+            Your data is saved only on this device. Save a backup regularly and keep it
+            somewhere safe, like Google Drive, email or a WhatsApp chat with yourself.
+          </p>
+
+          <div id="backupStatus" class="backup-status"></div>
+
+          <button class="primary-btn" type="button" id="exportJsonBtn">
+            <i class="bx bx-download"></i> Save Backup
+          </button>
+
+          <p class="small-note">
+            Need a report for Excel or to share? Use the Reports tab.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title"><i class="bx bx-history"></i> Restore from backup</h2>
+          <p class="card-text">
+            Choose a Daily Katha backup file. This replaces all customers and transactions on this device.
+          </p>
+
+          <input id="importFile" type="file" accept=".json,application/json" hidden />
+          <button class="secondary-btn" type="button" id="importBtn">
+            <i class="bx bx-upload"></i> Choose Backup File
+          </button>
+        </div>
+
+        <div class="card" id="installCard" hidden>
+          <h2 class="section-title"><i class="bx bx-mobile-alt"></i> Install app</h2>
+          <p class="card-text" id="installText"></p>
+
+          <button class="primary-btn" type="button" id="installBtn" hidden>
+            <i class="bx bx-mobile-alt"></i> Install Daily Katha
+          </button>
         </div>
       </section>
     </main>
 
     <nav class="bottom-nav">
       <div class="nav-inner">
-        <button class="nav-btn active" data-tab="customersTab">
-          <span class="icon">👤</span>
+        <button class="nav-btn" data-tab="customersTab" data-icon="bx-group" data-icon-active="bxs-group">
+          <span class="nav-icon"><i class="bx bx-group"></i></span>
           <span>Customers</span>
         </button>
 
-        <button class="nav-btn" data-tab="transactionsTab">
-          <span class="icon">₹</span>
-          <span>Transactions</span>
+        <button class="nav-btn" data-tab="transactionsTab" data-icon="bx-plus-circle" data-icon-active="bxs-plus-circle">
+          <span class="nav-icon"><i class="bx bx-plus-circle"></i></span>
+          <span>Add Entry</span>
         </button>
 
-        <button class="nav-btn" data-tab="historyTab">
-          <span class="icon">🧾</span>
+        <button class="nav-btn" data-tab="historyTab" data-icon="bx-receipt" data-icon-active="bxs-receipt">
+          <span class="nav-icon"><i class="bx bx-receipt"></i></span>
           <span>History</span>
+        </button>
+
+        <button class="nav-btn" data-tab="reportsTab" data-icon="bx-pie-chart-alt-2" data-icon-active="bxs-pie-chart-alt-2">
+          <span class="nav-icon"><i class="bx bx-pie-chart-alt-2"></i></span>
+          <span>Reports</span>
         </button>
       </div>
     </nav>
   </div>
 
-  <div id="toast" class="toast"></div>
+  <div id="fileSheet" class="sheet-backdrop" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="fileSheetTitle">
+      <div class="sheet-handle"></div>
+      <h2 class="sheet-title" id="fileSheetTitle">Your file is ready</h2>
+
+      <div class="file-card">
+        <div class="export-icon" id="fileSheetIcon"></div>
+        <div class="list-main">
+          <div class="file-name" id="fileSheetName"></div>
+          <div class="file-meta" id="fileSheetMeta"></div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="primary-btn" type="button" id="fileSaveBtn">
+          <i class="bx bx-download"></i> Save to device
+        </button>
+        <button class="secondary-btn" type="button" id="fileShareBtn">
+          <i class="bx bx-share-alt"></i> Share (WhatsApp, Drive, Email)
+        </button>
+        <button class="text-btn" type="button" id="fileCloseBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
     const STORAGE_CUSTOMERS = "customer_ledger_customers_v1";
     const STORAGE_TRANSACTIONS = "customer_ledger_transactions_v1";
+    const STORAGE_LAST_BACKUP = "daily_katha_last_backup";
+    const BACKUP_FORMAT = "daily-katha-backup";
+    const BACKUP_VERSION = 2;
+    const BACKUP_REMINDER_DAYS = 7;
+    const PAYMENT_TYPES = ["Cash", "UPI", "Card", "Bank Transfer", "Other"];
 
-    let customers = JSON.parse(localStorage.getItem(STORAGE_CUSTOMERS) || "[]");
-    let transactions = JSON.parse(localStorage.getItem(STORAGE_TRANSACTIONS) || "[]");
+    const TABS = {
+      customersTab: "Customers",
+      transactionsTab: "Add Entry",
+      historyTab: "History",
+      reportsTab: "Reports",
+      backupTab: "Backup & Restore"
+    };
+
+    const EXPORT_SCRIPTS = {
+      pdf: ["vendor/jspdf/jspdf.umd.min.js", "vendor/jspdf/jspdf.plugin.autotable.min.js", "export.js"],
+      xlsx: ["vendor/exceljs/exceljs.min.js", "export.js"],
+      csv: ["export.js"]
+    };
+
+    const FILE_KINDS = {
+      pdf: { icon: "bxs-file-pdf", label: "PDF document" },
+      xlsx: { icon: "bxs-spreadsheet", label: "Excel workbook" },
+      csv: { icon: "bxs-file-txt", label: "CSV file" },
+      json: { icon: "bxs-file-json", label: "Daily Katha backup" }
+    };
+
+    const AVATAR_COLORS = [
+      ["#eef2ff", "#4338ca"],
+      ["#ecfdf3", "#047857"],
+      ["#fff7ed", "#c2410c"],
+      ["#fdf2f8", "#be185d"],
+      ["#f0f9ff", "#0369a1"],
+      ["#f5f3ff", "#6d28d9"]
+    ];
+
+    let storageBlocked = false;
+    let storageUnreadable = false;
+
+    let customers = loadRecords(STORAGE_CUSTOMERS, normalizeCustomer);
+    let transactions = loadRecords(STORAGE_TRANSACTIONS, normalizeTransaction);
     let transactionType = "bill";
+    let editingCustomerId = null;
+    let editingTransactionId = null;
+    let deferredInstallPrompt = null;
+    let pendingFile = null;
+    let exporting = false;
+    let historyPage = 1;
 
-    const customerForm = document.getElementById("customerForm");
-    const transactionForm = document.getElementById("transactionForm");
+    const HISTORY_PAGE_SIZE = 10;
 
-    const customerName = document.getElementById("customerName");
-    const customerAddress = document.getElementById("customerAddress");
-    const customerPhone = document.getElementById("customerPhone");
+    const reportState = { period: "this-month", from: "", to: "", customerId: "" };
 
-    const customerSelect = document.getElementById("customerSelect");
-    const amount = document.getElementById("amount");
-    const paymentType = document.getElementById("paymentType");
-    const transactionDate = document.getElementById("transactionDate");
-    const notes = document.getElementById("notes");
+    const $ = id => document.getElementById(id);
 
-    const customerSummary = document.getElementById("customerSummary");
-    const summaryName = document.getElementById("summaryName");
-    const summaryMeta = document.getElementById("summaryMeta");
-    const summaryBalance = document.getElementById("summaryBalance");
+    const customerForm = $("customerForm");
+    const transactionForm = $("transactionForm");
 
-    const customerList = document.getElementById("customerList");
-    const transactionList = document.getElementById("transactionList");
-    const historyCustomerFilter = document.getElementById("historyCustomerFilter");
+    const customerFormCard = $("customerFormCard");
+    const customerFormTitle = $("customerFormTitle");
+    const customerSubmitBtn = $("customerSubmitBtn");
+    const customerCancelBtn = $("customerCancelBtn");
+    const customerName = $("customerName");
+    const customerAddress = $("customerAddress");
+    const customerPhone = $("customerPhone");
+    const customerSearch = $("customerSearch");
+    const customerSearchField = $("customerSearchField");
+    const customerCount = $("customerCount");
 
-    const billBtn = document.getElementById("billBtn");
-    const receiveBtn = document.getElementById("receiveBtn");
+    const transactionFormTitle = $("transactionFormTitle");
+    const transactionSubmitBtn = $("transactionSubmitBtn");
+    const transactionCancelBtn = $("transactionCancelBtn");
+    const customerSelect = $("customerSelect");
+    const amount = $("amount");
+    const paymentType = $("paymentType");
+    const transactionDate = $("transactionDate");
+    const notes = $("notes");
 
-    const pageTitle = document.getElementById("pageTitle");
-    const pageSubtitle = document.getElementById("pageSubtitle");
-    const toast = document.getElementById("toast");
+    const customerSummary = $("customerSummary");
+    const summaryAvatar = $("summaryAvatar");
+    const summaryName = $("summaryName");
+    const summaryMeta = $("summaryMeta");
+    const summaryBalance = $("summaryBalance");
 
-    transactionDate.value = new Date().toISOString().slice(0, 10);
+    const backupReminder = $("backupReminder");
+    const backupReminderText = $("backupReminderText");
 
-    function saveData() {
-      localStorage.setItem(STORAGE_CUSTOMERS, JSON.stringify(customers));
-      localStorage.setItem(STORAGE_TRANSACTIONS, JSON.stringify(transactions));
+    const customerList = $("customerList");
+    const transactionList = $("transactionList");
+    const historyCustomerFilter = $("historyCustomerFilter");
+    const historySummary = $("historySummary");
+    const historyPager = $("historyPager");
+
+    const reportsTab = $("reportsTab");
+    const periodChips = $("periodChips");
+    const customRange = $("customRange");
+    const reportFrom = $("reportFrom");
+    const reportTo = $("reportTo");
+    const reportCustomer = $("reportCustomer");
+    const reportHero = $("reportHero");
+    const reportKpis = $("reportKpis");
+    const trendChart = $("trendChart");
+    const topDuesCard = $("topDuesCard");
+    const topDues = $("topDues");
+    const paymentModes = $("paymentModes");
+    const exportHint = $("exportHint");
+
+    const backupStatus = $("backupStatus");
+    const exportJsonBtn = $("exportJsonBtn");
+    const importBtn = $("importBtn");
+    const importFile = $("importFile");
+    const installCard = $("installCard");
+    const installText = $("installText");
+    const installBtn = $("installBtn");
+
+    const fileSheet = $("fileSheet");
+    const fileSheetIcon = $("fileSheetIcon");
+    const fileSheetName = $("fileSheetName");
+    const fileSheetMeta = $("fileSheetMeta");
+    const fileSaveBtn = $("fileSaveBtn");
+    const fileShareBtn = $("fileShareBtn");
+    const fileCloseBtn = $("fileCloseBtn");
+
+    const billBtn = $("billBtn");
+    const receiveBtn = $("receiveBtn");
+
+    const pageTitle = $("pageTitle");
+    const toast = $("toast");
+
+    /* ---------- Storage ---------- */
+
+    function loadRecords(key, normalize) {
+      let raw;
+      try {
+        raw = localStorage.getItem(key);
+      } catch (e) {
+        storageBlocked = true;
+        return [];
+      }
+
+      if (!raw) return [];
+
+      let parsed = null;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (e) {}
+
+      const records = Array.isArray(parsed) ? parsed.map(normalize).filter(Boolean) : [];
+
+      if (!Array.isArray(parsed) || records.length !== parsed.length) {
+        // Keep the unreadable original so it can still be recovered by hand.
+        try {
+          localStorage.setItem(`${key}_unreadable_${Date.now()}`, raw);
+        } catch (e) {}
+        storageUnreadable = true;
+      }
+
+      return records;
     }
 
-    function showToast(message) {
+    function saveData() {
+      try {
+        localStorage.setItem(STORAGE_CUSTOMERS, JSON.stringify(customers));
+        localStorage.setItem(STORAGE_TRANSACTIONS, JSON.stringify(transactions));
+        return true;
+      } catch (e) {
+        showToast("Could not save on this device. Save a backup now.", 5000);
+        return false;
+      }
+    }
+
+    function readLastBackup() {
+      try {
+        return Number(localStorage.getItem(STORAGE_LAST_BACKUP)) || 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function normalizeCustomer(c) {
+      if (!c || typeof c !== "object" || !c.id) return null;
+      if (typeof c.name !== "string" || !c.name.trim()) return null;
+
+      return {
+        id: String(c.id),
+        name: c.name.trim(),
+        address: String(c.address ?? "").trim(),
+        phone: String(c.phone ?? "").trim(),
+        createdAt: Number(c.createdAt) || 0
+      };
+    }
+
+    function normalizeTransaction(t) {
+      if (!t || typeof t !== "object" || !t.id || !t.customerId) return null;
+      if (t.type !== "bill" && t.type !== "receive") return null;
+      if (!isValidDate(t.date)) return null;
+
+      // Amounts are stored in paise. Older data stored rupees in `amount`.
+      const amountPaise = Number.isSafeInteger(t.amountPaise) ? t.amountPaise : toPaise(t.amount);
+      if (!Number.isSafeInteger(amountPaise) || amountPaise <= 0) return null;
+
+      return {
+        id: String(t.id),
+        customerId: String(t.customerId),
+        type: t.type,
+        amountPaise,
+        paymentType: PAYMENT_TYPES.includes(t.paymentType) ? t.paymentType : "Other",
+        date: t.date,
+        notes: String(t.notes ?? "").trim(),
+        createdAt: Number(t.createdAt) || 0,
+        updatedAt: Number(t.updatedAt) || undefined
+      };
+    }
+
+    /* ---------- Helpers ---------- */
+
+    function showToast(message, duration = 2200) {
       toast.textContent = message;
       toast.classList.add("show");
       clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), duration);
     }
 
-    function money(value) {
-      return "₹" + Number(value).toLocaleString("en-IN", {
+    function toPaise(value) {
+      return Math.round(Number(value) * 100);
+    }
+
+    function money(paise) {
+      return "₹" + (paise / 100).toLocaleString("en-IN", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
     }
 
+    function compactMoney(paise) {
+      const rupees = paise / 100;
+      const units = [[1e7, "Cr"], [1e5, "L"], [1e3, "K"]];
+      for (const [size, suffix] of units) {
+        if (rupees >= size) return `₹${+(rupees / size).toFixed(1)}${suffix}`;
+      }
+      return `₹${Math.round(rupees)}`;
+    }
+
+    function describeBalance(balance) {
+      return balance > 0 ? `${money(balance)} due` :
+        balance < 0 ? `${money(-balance)} advance` :
+        "Settled";
+    }
+
+    function balanceClass(balance) {
+      return balance > 0 ? "bill" : balance < 0 ? "receive" : "";
+    }
+
+    function signedAmount(t) {
+      return t.type === "bill" ? t.amountPaise : -t.amountPaise;
+    }
+
+    function balancesByCustomer() {
+      const balances = new Map();
+      for (const t of transactions) {
+        balances.set(t.customerId, (balances.get(t.customerId) || 0) + signedAmount(t));
+      }
+      return balances;
+    }
+
     function customerBalance(customerId) {
       return transactions
         .filter(t => t.customerId === customerId)
-        .reduce((balance, t) => {
-          return t.type === "bill"
-            ? balance + Number(t.amount)
-            : balance - Number(t.amount);
-        }, 0);
+        .reduce((balance, t) => balance + signedAmount(t), 0);
     }
 
     function getCustomer(customerId) {
       return customers.find(c => c.id === customerId);
+    }
+
+    function compareTransactionsOldestFirst(a, b) {
+      return a.date < b.date ? -1 : a.date > b.date ? 1 : a.createdAt - b.createdAt;
+    }
+
+    function localISO(d) {
+      return [
+        d.getFullYear(),
+        String(d.getMonth() + 1).padStart(2, "0"),
+        String(d.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function todayLocal() {
+      return localISO(new Date());
+    }
+
+    function isValidDate(value) {
+      return typeof value === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+        !Number.isNaN(new Date(value + "T00:00:00").getTime());
     }
 
     function formatDate(dateString) {
@@ -602,132 +1942,281 @@
       });
     }
 
-    function renderCustomers() {
+    function formatDateTime(timestamp) {
+      return new Date(timestamp).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function plural(count, word) {
+      return `${count} ${word}${count === 1 ? "" : "s"}`;
+    }
+
+    function formatBytes(bytes) {
+      return bytes < 1024 ? `${bytes} B` :
+        bytes < 1048576 ? `${Math.round(bytes / 1024)} KB` :
+        `${(bytes / 1048576).toFixed(1)} MB`;
+    }
+
+    function makeId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function initials(name) {
+      const words = name.trim().split(/\s+/);
+      const letters = words.length > 1
+        ? Array.from(words[0])[0] + Array.from(words[words.length - 1])[0]
+        : Array.from(words[0]).slice(0, 2).join("");
+      return letters.toUpperCase();
+    }
+
+    function avatarStyle(id) {
+      let hash = 0;
+      for (const ch of id) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+      const [bg, fg] = AVATAR_COLORS[hash % AVATAR_COLORS.length];
+      return `background:${bg};color:${fg}`;
+    }
+
+    function avatarHtml(customer) {
+      return `<div class="avatar" style="${avatarStyle(customer.id)}">${escapeHtml(initials(customer.name))}</div>`;
+    }
+
+    /* ---------- Rendering ---------- */
+
+    function render() {
+      const balances = balancesByCustomer();
+
+      renderCustomers(balances);
+      renderCustomerOptions(customerSelect, "Select a customer");
+      renderCustomerOptions(historyCustomerFilter, "All Customers");
+      renderCustomerOptions(reportCustomer, "All customers");
+      reportState.customerId = reportCustomer.value;
+      updateCustomerSummary();
+      renderTransactions();
+      renderBackupStatus();
+      renderReports();
+    }
+
+    function renderCustomers(balances) {
+      customerCount.textContent = customers.length ? plural(customers.length, "customer") : "";
+      customerSearchField.hidden = customers.length < 5;
+
       if (!customers.length) {
         customerList.innerHTML = `
           <div class="empty">
+            <i class="bx bx-user-plus"></i>
             No customers added yet.<br>
             Add your first customer above.
           </div>
         `;
-      } else {
-        customerList.innerHTML = customers
-          .slice()
-          .reverse()
-          .map(c => {
-            const balance = customerBalance(c.id);
-            const balanceText =
-              balance > 0 ? `${money(balance)} due` :
-              balance < 0 ? `${money(Math.abs(balance))} advance` :
-              "Settled";
-
-            return `
-              <div class="customer-item">
-                <div class="row">
-                  <div>
-                    <div class="item-title">${escapeHtml(c.name)}</div>
-                    <div class="item-sub">
-                      ${escapeHtml(c.phone || "No phone")}
-                      ${c.address ? " • " + escapeHtml(c.address) : ""}
-                    </div>
-                  </div>
-                  <div class="amount ${balance > 0 ? "bill" : balance < 0 ? "receive" : ""}">
-                    ${balance === 0 ? "₹0.00" : money(Math.abs(balance))}
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top:4px;">
-                  <div class="item-sub">${balanceText}</div>
-                  <button class="delete-btn" onclick="deleteCustomer('${c.id}')">Delete</button>
-                </div>
-              </div>
-            `;
-          }).join("");
+        return;
       }
 
-      renderCustomerSelect();
-      renderHistoryFilter();
-      renderTransactions();
+      const query = customerSearch.value.trim().toLowerCase();
+      const matches = customers
+        .slice()
+        .reverse()
+        .filter(c => !query || c.name.toLowerCase().includes(query) || c.phone.includes(query));
+
+      if (!matches.length) {
+        customerList.innerHTML = `
+          <div class="empty">
+            <i class="bx bx-search"></i>
+            No customers match "${escapeHtml(customerSearch.value.trim())}".
+          </div>
+        `;
+        return;
+      }
+
+      customerList.innerHTML = matches.map(c => {
+        const balance = balances.get(c.id) || 0;
+        const id = escapeHtml(c.id);
+        const status = balance > 0 ? "Due" : balance < 0 ? "Advance" : "Settled";
+
+        return `
+          <div class="list-item">
+            ${avatarHtml(c)}
+            <div class="list-main">
+              <div class="list-row">
+                <div class="item-title">${escapeHtml(c.name)}</div>
+                <div class="amount ${balanceClass(balance)}">${money(Math.abs(balance))}</div>
+              </div>
+              <div class="list-row">
+                <div class="item-sub">
+                  ${escapeHtml(c.phone || "No phone")}${c.address ? " · " + escapeHtml(c.address) : ""}
+                </div>
+                <span class="pill ${balanceClass(balance)}">${status}</span>
+              </div>
+            </div>
+            <div class="item-actions">
+              <button class="chip-btn" data-action="history" data-id="${id}">
+                <i class="bx bx-list-ul"></i> History
+              </button>
+              <button class="chip-btn" data-action="edit" data-id="${id}">
+                <i class="bx bx-edit-alt"></i> Edit
+              </button>
+              <button class="chip-btn danger" data-action="delete" data-id="${id}">
+                <i class="bx bx-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
-    function renderCustomerSelect() {
-      const current = customerSelect.value;
+    function renderCustomerOptions(select, placeholder) {
+      const current = select.value;
 
-      customerSelect.innerHTML = `
-        <option value="">Select a customer</option>
-        ${customers.map(c => `
-          <option value="${c.id}">
-            ${escapeHtml(c.name)}
-          </option>
-        `).join("")}
+      select.innerHTML = `
+        <option value="">${placeholder}</option>
+        ${customers
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`)
+          .join("")}
       `;
 
-      if (customers.some(c => c.id === current)) {
-        customerSelect.value = current;
-      }
-
-      updateCustomerSummary();
+      select.value = customers.some(c => c.id === current) ? current : "";
     }
 
     function renderTransactions() {
-      const filterCustomerId = historyCustomerFilter ? historyCustomerFilter.value : "";
-      const filtered = transactions.filter(t =>
-        !filterCustomerId || t.customerId === filterCustomerId
-      );
+      const filterCustomerId = historyCustomerFilter.value;
+      const customerById = new Map(customers.map(c => [c.id, c]));
+
+      const filtered = transactions
+        .filter(t => customerById.has(t.customerId))
+        .filter(t => !filterCustomerId || t.customerId === filterCustomerId)
+        .sort(compareTransactionsOldestFirst);
 
       if (!filtered.length) {
+        historySummary.hidden = true;
+        historyPager.hidden = true;
         transactionList.innerHTML = `
           <div class="empty">
+            <i class="bx bx-receipt"></i>
             No transactions found.
           </div>
         `;
         return;
       }
 
+      // A running balance only makes sense when looking at one customer.
+      const runningBalance = new Map();
+      let billed = 0, received = 0, balance = 0;
+
+      for (const t of filtered) {
+        if (t.type === "bill") billed += t.amountPaise;
+        else received += t.amountPaise;
+
+        balance += signedAmount(t);
+        runningBalance.set(t.id, balance);
+      }
+
+      historySummary.hidden = false;
+      historySummary.innerHTML = `
+        <div class="summary-cell">
+          <span>Billed</span>
+          <strong class="amount bill">${money(billed)}</strong>
+        </div>
+        <div class="summary-cell">
+          <span>Received</span>
+          <strong class="amount receive">${money(received)}</strong>
+        </div>
+        <div class="summary-cell">
+          <span>${filterCustomerId ? "Balance" : "Net balance"}</span>
+          <strong class="amount ${balanceClass(balance)}">${describeBalance(balance)}</strong>
+        </div>
+      `;
+
+      const pageCount = Math.ceil(filtered.length / HISTORY_PAGE_SIZE);
+      historyPage = Math.min(Math.max(historyPage, 1), pageCount);
+      const start = (historyPage - 1) * HISTORY_PAGE_SIZE;
+
       transactionList.innerHTML = filtered
-        .slice()
-        .sort((a, b) => new Date(b.date) - new Date(a.date) || b.createdAt - a.createdAt)
+        .reverse()
+        .slice(start, start + HISTORY_PAGE_SIZE)
         .map(t => {
-          const customer = getCustomer(t.customerId);
-          if (!customer) return "";
+          const customer = customerById.get(t.customerId);
+          const id = escapeHtml(t.id);
+          const isBill = t.type === "bill";
 
           return `
-            <div class="transaction-item">
-              <div class="row">
-                <div>
+            <div class="list-item">
+              <div class="txn-icon ${t.type}">
+                <i class="bx ${isBill ? "bx-up-arrow-alt" : "bx-down-arrow-alt"}"></i>
+              </div>
+              <div class="list-main">
+                <div class="list-row">
                   <div class="item-title">${escapeHtml(customer.name)}</div>
+                  <div class="amount ${t.type}">${isBill ? "+" : "-"} ${money(t.amountPaise)}</div>
+                </div>
+                <div class="list-row">
                   <div class="item-sub">
-                    ${formatDate(t.date)} • ${escapeHtml(t.paymentType)}
-                    ${t.notes ? " • " + escapeHtml(t.notes) : ""}
+                    ${formatDate(t.date)} · ${escapeHtml(t.paymentType)}${t.notes ? " · " + escapeHtml(t.notes) : ""}
                   </div>
+                  ${filterCustomerId ? `
+                    <div class="running-balance">Bal: ${describeBalance(runningBalance.get(t.id))}</div>
+                  ` : ""}
                 </div>
-
-                <div class="amount ${t.type}">
-                  ${t.type === "bill" ? "+" : "-"} ${money(t.amount)}
-                </div>
+              </div>
+              <div class="item-actions">
+                <button class="chip-btn" data-action="edit" data-id="${id}">
+                  <i class="bx bx-edit-alt"></i> Edit
+                </button>
+                <button class="chip-btn danger" data-action="delete" data-id="${id}">
+                  <i class="bx bx-trash"></i> Delete
+                </button>
               </div>
             </div>
           `;
         }).join("");
+
+      renderHistoryPager(pageCount, start, filtered.length);
     }
 
-    function renderHistoryFilter() {
-      if (!historyCustomerFilter) return;
+    function renderHistoryPager(pageCount, start, total) {
+      historyPager.hidden = pageCount < 2;
+      if (pageCount < 2) return;
 
-      const current = historyCustomerFilter.value;
-
-      historyCustomerFilter.innerHTML = `
-        <option value="">All Customers</option>
-        ${customers.map(c => `
-          <option value="${c.id}">${escapeHtml(c.name)}</option>
-        `).join("")}
-      `;
-
-      if (customers.some(c => c.id === current)) {
-        historyCustomerFilter.value = current;
-      } else {
-        historyCustomerFilter.value = "";
+      // Always show the first and last page, plus the pages around the current one.
+      const pages = [];
+      for (let p = 1; p <= pageCount; p++) {
+        if (p === 1 || p === pageCount || Math.abs(p - historyPage) <= 1) pages.push(p);
+        else if (pages[pages.length - 1] !== "gap") pages.push("gap");
       }
+
+      historyPager.innerHTML = `
+        <button type="button" class="page-btn" data-page="${historyPage - 1}"
+                ${historyPage === 1 ? "disabled" : ""} aria-label="Previous page">
+          <i class="bx bx-chevron-left"></i>
+        </button>
+        <div>
+          <div class="pager-pages">
+            ${pages.map(p => p === "gap"
+              ? `<span class="page-gap">…</span>`
+              : `<button type="button" class="page-btn ${p === historyPage ? "active" : ""}" data-page="${p}"
+                   ${p === historyPage ? 'aria-current="page"' : ""}>${p}</button>`).join("")}
+          </div>
+          <div class="pager-info">${start + 1}–${Math.min(start + HISTORY_PAGE_SIZE, total)} of ${total}</div>
+        </div>
+        <button type="button" class="page-btn" data-page="${historyPage + 1}"
+                ${historyPage === pageCount ? "disabled" : ""} aria-label="Next page">
+          <i class="bx bx-chevron-right"></i>
+        </button>
+      `;
     }
 
     function updateCustomerSummary() {
@@ -741,17 +2230,34 @@
       const balance = customerBalance(customer.id);
 
       customerSummary.classList.add("show");
+      summaryAvatar.setAttribute("style", avatarStyle(customer.id));
+      summaryAvatar.textContent = initials(customer.name);
       summaryName.textContent = customer.name;
       summaryMeta.textContent =
-        [customer.phone, customer.address].filter(Boolean).join(" • ") || "Customer details";
+        [customer.phone, customer.address].filter(Boolean).join(" · ") || "No contact details";
 
-      summaryBalance.textContent =
-        balance > 0 ? `${money(balance)} due` :
-        balance < 0 ? `${money(Math.abs(balance))} advance` :
-        "₹0.00 settled";
-
+      summaryBalance.textContent = describeBalance(balance);
       summaryBalance.className =
         "balance-value " + (balance > 0 ? "positive" : balance < 0 ? "negative" : "");
+    }
+
+    function renderBackupStatus() {
+      const lastBackup = readLastBackup();
+      const daysAgo = lastBackup ? Math.floor((Date.now() - lastBackup) / 86400000) : null;
+      const needsBackup = transactions.length > 0 &&
+        (!lastBackup || daysAgo >= BACKUP_REMINDER_DAYS);
+
+      backupStatus.className = "backup-status " + (needsBackup ? "warn" : "ok");
+      backupStatus.innerHTML = lastBackup
+        ? `<i class="bx ${needsBackup ? "bx-time-five" : "bx-check-circle"}"></i>
+           <span>Last backup: ${escapeHtml(formatDateTime(lastBackup))}</span>`
+        : `<i class="bx bx-info-circle"></i>
+           <span>No backup saved on this device yet.</span>`;
+
+      backupReminder.hidden = !needsBackup;
+      backupReminderText.textContent = lastBackup
+        ? `Last backup was ${plural(daysAgo, "day")} ago. Save a fresh copy.`
+        : "Your ledger is only on this phone. Save a backup to keep it safe.";
     }
 
     function setTransactionType(type) {
@@ -759,9 +2265,668 @@
 
       billBtn.classList.toggle("active", type === "bill");
       billBtn.classList.toggle("bill", type === "bill");
+      billBtn.setAttribute("aria-pressed", type === "bill");
 
       receiveBtn.classList.toggle("active", type === "receive");
       receiveBtn.classList.toggle("receive", type === "receive");
+      receiveBtn.setAttribute("aria-pressed", type === "receive");
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.toggle("active", tab.id === tabId);
+      });
+
+      document.querySelectorAll("[data-tab]").forEach(btn => {
+        const active = btn.dataset.tab === tabId;
+        btn.classList.toggle("active", active);
+
+        if (btn.dataset.icon) {
+          btn.querySelector(".nav-icon i").className =
+            "bx " + (active ? btn.dataset.iconActive : btn.dataset.icon);
+        }
+      });
+
+      pageTitle.textContent = TABS[tabId];
+
+      // The app can stay open across midnight; keep a fresh entry on today's date.
+      if (tabId === "transactionsTab" && !editingTransactionId && !amount.value) {
+        transactionDate.value = todayLocal();
+      }
+
+      window.scrollTo(0, 0);
+      renderReports();
+    }
+
+    /* ---------- Reports ---------- */
+
+    function periodRange() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth();
+      const monthName = (year, month) =>
+        new Date(year, month, 1).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+      const monthSlug = (year, month) =>
+        new Date(year, month, 1).toLocaleDateString("en-US", { month: "short" }) + "-" + year;
+
+      switch (reportState.period) {
+        case "this-month":
+          return {
+            from: localISO(new Date(y, m, 1)),
+            to: localISO(new Date(y, m + 1, 0)),
+            label: monthName(y, m),
+            slug: monthSlug(y, m)
+          };
+
+        case "last-month":
+          return {
+            from: localISO(new Date(y, m - 1, 1)),
+            to: localISO(new Date(y, m, 0)),
+            label: monthName(y, m - 1),
+            slug: monthSlug(m === 0 ? y - 1 : y, (m + 11) % 12)
+          };
+
+        case "this-fy": {
+          // Indian financial year: 1 April to 31 March.
+          const start = m >= 3 ? y : y - 1;
+          return {
+            from: localISO(new Date(start, 3, 1)),
+            to: localISO(new Date(start + 1, 2, 31)),
+            label: `FY ${start}-${String(start + 1).slice(2)}`,
+            slug: `FY-${start}-${String(start + 1).slice(2)}`
+          };
+        }
+
+        case "custom": {
+          let from = reportFrom.value || localISO(new Date(y, m, 1));
+          let to = reportTo.value || todayLocal();
+          if (from > to) [from, to] = [to, from];
+          return {
+            from,
+            to,
+            label: `${formatDate(from)} – ${formatDate(to)}`,
+            slug: `${from}-to-${to}`
+          };
+        }
+
+        default:
+          return { from: null, to: null, label: "All time", slug: "All-Time" };
+      }
+    }
+
+    function buildReport() {
+      const period = periodRange();
+      const customerId = reportState.customerId;
+      const scoped = customers.filter(c => !customerId || c.id === customerId);
+      const rows = new Map(scoped.map(c => [c.id, {
+        customer: c, opening: 0, billed: 0, received: 0, closing: 0, entries: 0
+      }]));
+
+      const entries = [];
+      const modes = new Map();
+      let billed = 0, received = 0;
+
+      transactions
+        .filter(t => rows.has(t.customerId))
+        .sort(compareTransactionsOldestFirst)
+        .forEach(t => {
+          const row = rows.get(t.customerId);
+
+          if (period.from && t.date < period.from) {
+            row.opening += signedAmount(t);
+            row.closing += signedAmount(t);
+            return;
+          }
+          if (period.to && t.date > period.to) return;
+
+          row.closing += signedAmount(t);
+          row.entries++;
+
+          if (t.type === "bill") {
+            row.billed += t.amountPaise;
+            billed += t.amountPaise;
+          } else {
+            row.received += t.amountPaise;
+            received += t.amountPaise;
+            modes.set(t.paymentType, (modes.get(t.paymentType) || 0) + t.amountPaise);
+          }
+
+          entries.push({
+            ...t,
+            customerName: row.customer.name,
+            customerPhone: row.customer.phone,
+            balanceAfter: row.closing
+          });
+        });
+
+      let due = 0, dueCount = 0, advance = 0, advanceCount = 0, opening = 0;
+      for (const row of rows.values()) {
+        opening += row.opening;
+        if (row.closing > 0) { due += row.closing; dueCount++; }
+        if (row.closing < 0) { advance -= row.closing; advanceCount++; }
+      }
+
+      const customer = customerId ? rows.get(customerId)?.customer : null;
+      const today = todayLocal();
+      const asOf = period.to && period.to < today ? period.to : today;
+      const nameSlug = customer
+        ? customer.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") || "Customer"
+        : "";
+
+      return {
+        title: customer ? "Customer Statement" : "Ledger Report",
+        periodLabel: period.label,
+        rangeLabel: period.from ? `${formatDate(period.from)} – ${formatDate(period.to)}` : "All time",
+        from: period.from,
+        to: period.to,
+        asOf,
+        generatedAt: Date.now(),
+        customer,
+        fileBase: customer
+          ? `DailyKatha-Statement-${nameSlug}-${period.slug}`
+          : `DailyKatha-Report-${period.slug}`,
+        totals: {
+          due, dueCount, advance, advanceCount, opening,
+          closing: due - advance,
+          billed, received,
+          entries: entries.length,
+          customers: scoped.length,
+          activeCustomers: [...rows.values()].filter(r => r.entries).length
+        },
+        balances: [...rows.values()]
+          .filter(r => r.opening || r.closing || r.entries)
+          .sort((a, b) => b.closing - a.closing),
+        entries,
+        modes: [...modes].sort((a, b) => b[1] - a[1])
+      };
+    }
+
+    function renderReports() {
+      if (!reportsTab.classList.contains("active")) return;
+
+      periodChips.querySelectorAll(".chip").forEach(chip => {
+        chip.classList.toggle("active", chip.dataset.period === reportState.period);
+      });
+      customRange.hidden = reportState.period !== "custom";
+
+      const report = buildReport();
+      renderHero(report);
+      renderKpis(report);
+      renderTrend(report);
+      renderTopDues(report);
+      renderPaymentModes(report);
+
+      exportHint.textContent = report.customer
+        ? `Statement for ${report.customer.name} · ${report.periodLabel}. Opening balance, every entry with running balance, and closing balance.`
+        : `${report.periodLabel} · Summary, customer balances and all ${report.totals.entries} ` +
+          `${report.totals.entries === 1 ? "entry" : "entries"}.`;
+    }
+
+    function renderHero(report) {
+      const t = report.totals;
+      const asOf = `as of ${formatDate(report.asOf)}`;
+
+      if (report.customer) {
+        const label = t.closing > 0 ? "Due from customer" : t.closing < 0 ? "Advance held" : "Balance";
+        reportHero.innerHTML = `
+          <div class="hero-label"><i class="bx bx-user"></i> ${escapeHtml(report.customer.name)}</div>
+          <div class="hero-value">${t.closing ? money(Math.abs(t.closing)) : "Settled"}</div>
+          <div class="hero-sub">${label} · ${asOf}</div>
+          <div class="hero-split">
+            <div><span>Opening balance</span><strong>${describeBalance(t.opening)}</strong></div>
+            <div><span>Entries</span><strong>${t.entries}</strong></div>
+          </div>
+        `;
+        return;
+      }
+
+      reportHero.innerHTML = `
+        <div class="hero-label"><i class="bx bx-trending-up"></i> To collect</div>
+        <div class="hero-value">${money(t.due)}</div>
+        <div class="hero-sub">from ${plural(t.dueCount, "customer")} · ${asOf}</div>
+        <div class="hero-split">
+          <div><span>Advance held</span><strong>${money(t.advance)}</strong></div>
+          <div><span>Net balance</span><strong>${describeBalance(t.closing)}</strong></div>
+        </div>
+      `;
+    }
+
+    function renderKpis(report) {
+      const t = report.totals;
+      const rate = t.billed ? Math.round((t.received / t.billed) * 100) : null;
+
+      reportKpis.innerHTML = `
+        <div class="kpi">
+          <div class="kpi-icon bill"><i class="bx bx-up-arrow-alt"></i></div>
+          <div class="kpi-label">Billed</div>
+          <div class="kpi-value">${money(t.billed)}</div>
+          <div class="kpi-sub">${report.periodLabel}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon receive"><i class="bx bx-down-arrow-alt"></i></div>
+          <div class="kpi-label">Received</div>
+          <div class="kpi-value">${money(t.received)}</div>
+          <div class="kpi-sub">${report.periodLabel}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon accent"><i class="bx bx-line-chart"></i></div>
+          <div class="kpi-label">Collection rate</div>
+          <div class="kpi-value">${rate === null ? "—" : rate + "%"}</div>
+          <div class="progress" role="presentation"><div style="width:${Math.min(rate || 0, 100)}%"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-icon neutral"><i class="bx bx-hash"></i></div>
+          <div class="kpi-label">Entries</div>
+          <div class="kpi-value">${t.entries}</div>
+          <div class="kpi-sub">${report.customer ? "for this customer" : `from ${plural(t.activeCustomers, "customer")}`}</div>
+        </div>
+      `;
+    }
+
+    function monthlyTrend(report) {
+      const end = new Date((report.asOf) + "T00:00:00");
+      const months = [];
+
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(end.getFullYear(), end.getMonth() - i, 1);
+        months.push({
+          key: localISO(d).slice(0, 7),
+          short: d.toLocaleDateString("en-IN", { month: "short" }),
+          long: d.toLocaleDateString("en-IN", { month: "long", year: "numeric" }),
+          billed: 0,
+          received: 0
+        });
+      }
+
+      const byKey = new Map(months.map(m => [m.key, m]));
+      for (const t of transactions) {
+        if (reportState.customerId && t.customerId !== reportState.customerId) continue;
+        if (!getCustomer(t.customerId)) continue;
+        const month = byKey.get(t.date.slice(0, 7));
+        if (!month) continue;
+        if (t.type === "bill") month.billed += t.amountPaise;
+        else month.received += t.amountPaise;
+      }
+
+      return months;
+    }
+
+    function niceMax(value) {
+      const exp = Math.pow(10, Math.floor(Math.log10(value)));
+      for (const step of [1, 2, 2.5, 5, 10]) {
+        if (step * exp >= value) return step * exp;
+      }
+      return value;
+    }
+
+    function barPath(x, top, width, height) {
+      const r = Math.min(4, height, width / 2);
+      const bottom = top + height;
+      return `M${x},${bottom}V${top + r}A${r},${r} 0 0 1 ${x + r},${top}` +
+        `H${x + width - r}A${r},${r} 0 0 1 ${x + width},${top + r}V${bottom}Z`;
+    }
+
+    function renderTrend(report) {
+      const months = monthlyTrend(report);
+      const max = Math.max(...months.flatMap(m => [m.billed, m.received]));
+
+      if (!max) {
+        trendChart.innerHTML = `
+          <div class="empty">
+            <i class="bx bx-bar-chart-alt-2"></i>
+            No entries in the last 6 months.
+          </div>
+        `;
+        return;
+      }
+
+      const width = trendChart.clientWidth || 300;
+      const height = 190;
+      const pad = { top: 10, right: 2, bottom: 26, left: 44 };
+      const plotW = width - pad.left - pad.right;
+      const plotH = height - pad.top - pad.bottom;
+      const top = niceMax(max);
+      const y = v => pad.top + plotH - (v / top) * plotH;
+      const band = plotW / months.length;
+      const barW = Math.max(6, Math.min(18, (band - 16) / 2));
+
+      let svg = "";
+
+      for (const tick of [0, top / 2, top]) {
+        svg += `<line x1="${pad.left}" x2="${width - pad.right}" y1="${y(tick)}" y2="${y(tick)}"
+                  stroke="var(--grid)" stroke-width="1" />`;
+        svg += `<text class="axis" x="${pad.left - 8}" y="${y(tick) + 3.5}" text-anchor="end">${compactMoney(tick)}</text>`;
+      }
+
+      months.forEach((m, i) => {
+        const cx = pad.left + band * i + band / 2;
+        svg += `<rect class="hit" data-i="${i}" x="${pad.left + band * i}" y="${pad.top}"
+                  width="${band}" height="${plotH}" rx="8" />`;
+
+        // 2px gap between the pair of bars.
+        [[m.received, cx - barW - 1, "var(--series-1)"], [m.billed, cx + 1, "var(--series-2)"]]
+          .forEach(([value, x, color]) => {
+            if (!value) return;
+            const h = Math.max(2, plotH - (y(value) - pad.top));
+            svg += `<path d="${barPath(x, pad.top + plotH - h, barW, h)}" fill="${color}" pointer-events="none" />`;
+          });
+
+        svg += `<text class="axis" x="${cx}" y="${height - 8}" text-anchor="middle">${m.short}</text>`;
+      });
+
+      trendChart.innerHTML = `
+        <svg width="${width}" height="${height}" role="img"
+             aria-label="Billed and received per month for the last 6 months">${svg}</svg>
+        <div class="chart-tip" hidden></div>
+        <table class="sr-only">
+          <caption>Billed and received per month</caption>
+          <tr><th>Month</th><th>Received</th><th>Billed</th></tr>
+          ${months.map(m => `<tr><td>${m.long}</td><td>${money(m.received)}</td><td>${money(m.billed)}</td></tr>`).join("")}
+        </table>
+      `;
+
+      const tip = trendChart.querySelector(".chart-tip");
+      const hits = trendChart.querySelectorAll(".hit");
+
+      const show = i => {
+        const m = months[i];
+        hits.forEach(h => h.classList.toggle("active", Number(h.dataset.i) === i));
+        tip.hidden = false;
+        tip.innerHTML = `
+          <strong>${m.long}</strong>
+          <div><span><i style="background:var(--series-1)"></i>Received</span><span>${money(m.received)}</span></div>
+          <div><span><i style="background:var(--series-2)"></i>Billed</span><span>${money(m.billed)}</span></div>
+        `;
+        const cx = pad.left + band * i + band / 2;
+        const half = tip.offsetWidth / 2;
+        tip.style.left = `${Math.min(Math.max(cx, half), width - half)}px`;
+        tip.style.top = `${-tip.offsetHeight - 6 + pad.top}px`;
+      };
+
+      const hide = () => {
+        tip.hidden = true;
+        hits.forEach(h => h.classList.remove("active"));
+      };
+
+      hits.forEach(hit => {
+        const i = Number(hit.dataset.i);
+        hit.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") show(i); });
+        hit.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") hide(); });
+        hit.addEventListener("click", () => {
+          if (!tip.hidden && hit.classList.contains("active")) hide();
+          else show(i);
+        });
+      });
+    }
+
+    function renderBarList(container, items, color, emptyText) {
+      if (!items.length) {
+        container.innerHTML = `<div class="empty" style="padding:10px 0">${emptyText}</div>`;
+        return;
+      }
+
+      const max = Math.max(...items.map(item => item.value));
+      container.innerHTML = items.map(item => `
+        <${item.id ? `button type="button" class="bar-item" data-id="${escapeHtml(item.id)}"` : `div class="bar-item"`}>
+          <div class="bar-top">
+            <span>${escapeHtml(item.label)}</span>
+            <strong>${money(item.value)}${item.share !== undefined ? ` <span class="card-hint">· ${item.share}%</span>` : ""}</strong>
+          </div>
+          <div class="bar-track"><div style="width:${(item.value / max) * 100}%;background:${color}"></div></div>
+        </${item.id ? "button" : "div"}>
+      `).join("");
+    }
+
+    function renderTopDues(report) {
+      topDuesCard.hidden = Boolean(report.customer);
+      if (report.customer) return;
+
+      const items = report.balances
+        .filter(r => r.closing > 0)
+        .slice(0, 5)
+        .map(r => ({ id: r.customer.id, label: r.customer.name, value: r.closing }));
+
+      renderBarList(topDues, items, "var(--red)", "No dues. Everyone is settled.");
+    }
+
+    function renderPaymentModes(report) {
+      const total = report.totals.received;
+      const items = report.modes.map(([mode, value]) => ({
+        label: mode,
+        value,
+        share: Math.round((value / total) * 100)
+      }));
+
+      renderBarList(paymentModes, items, "var(--series-1)", "No payments received in this period.");
+    }
+
+    periodChips.addEventListener("click", e => {
+      const chip = e.target.closest("[data-period]");
+      if (!chip) return;
+
+      reportState.period = chip.dataset.period;
+      if (reportState.period === "custom" && !reportFrom.value) {
+        const now = new Date();
+        reportFrom.value = localISO(new Date(now.getFullYear(), now.getMonth(), 1));
+        reportTo.value = todayLocal();
+      }
+      renderReports();
+    });
+
+    reportFrom.addEventListener("change", renderReports);
+    reportTo.addEventListener("change", renderReports);
+
+    reportCustomer.addEventListener("change", () => {
+      reportState.customerId = reportCustomer.value;
+      renderReports();
+    });
+
+    topDues.addEventListener("click", e => {
+      const item = e.target.closest("[data-id]");
+      if (!item) return;
+      reportCustomer.value = item.dataset.id;
+      reportState.customerId = item.dataset.id;
+      renderReports();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(renderReports, 150);
+    });
+
+    /* ---------- Files: export, save & share ---------- */
+
+    const loadedScripts = new Map();
+
+    function loadScript(src) {
+      if (!loadedScripts.has(src)) {
+        loadedScripts.set(src, new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = () => {
+            loadedScripts.delete(src);
+            reject(new Error(`Could not load ${src}`));
+          };
+          document.head.appendChild(script);
+        }));
+      }
+      return loadedScripts.get(src);
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    // Saves a generated file the best way the device allows:
+    //  1. An Android WebView wrapper can expose window.DailyKathaAndroid.saveFile().
+    //  2. Where files can be shared (Chrome on Android, installed app), offer Save or Share.
+    //  3. Otherwise download straight away.
+    async function deliverFile(blob, filename, kind, onSaved = () => {}) {
+      const bridge = window.DailyKathaAndroid;
+      if (bridge && typeof bridge.saveFile === "function") {
+        bridge.saveFile(await blobToBase64(blob), filename, blob.type);
+        onSaved();
+        showToast(`Saved ${filename}`, 3500);
+        return;
+      }
+
+      const file = new File([blob], filename, { type: blob.type });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        openFileSheet(file, kind, onSaved);
+        return;
+      }
+
+      downloadBlob(blob, filename);
+      onSaved();
+      showToast(`Saved ${filename} to Downloads.`, 3500);
+    }
+
+    function openFileSheet(file, kind, onSaved) {
+      pendingFile = { file, onSaved };
+      fileSheetIcon.className = `export-icon ${kind}`;
+      fileSheetIcon.innerHTML = `<i class="bx ${FILE_KINDS[kind].icon}"></i>`;
+      fileSheetName.textContent = file.name;
+      fileSheetMeta.textContent = `${FILE_KINDS[kind].label} · ${formatBytes(file.size)}`;
+      fileSheet.hidden = false;
+      fileSaveBtn.focus();
+    }
+
+    function closeFileSheet() {
+      fileSheet.hidden = true;
+      pendingFile = null;
+    }
+
+    fileSaveBtn.addEventListener("click", () => {
+      if (!pendingFile) return;
+      downloadBlob(pendingFile.file, pendingFile.file.name);
+      pendingFile.onSaved();
+      showToast(`Saved ${pendingFile.file.name} to Downloads.`, 3500);
+      closeFileSheet();
+    });
+
+    fileShareBtn.addEventListener("click", async () => {
+      if (!pendingFile) return;
+      const { file, onSaved } = pendingFile;
+      try {
+        await navigator.share({ files: [file], title: file.name });
+        onSaved();
+        closeFileSheet();
+      } catch (e) {
+        if (e.name !== "AbortError") showToast("Sharing failed. Try Save to device instead.");
+      }
+    });
+
+    fileCloseBtn.addEventListener("click", closeFileSheet);
+    fileSheet.addEventListener("click", e => { if (e.target === fileSheet) closeFileSheet(); });
+
+    async function exportReport(kind, tile) {
+      if (exporting) return;
+      exporting = true;
+
+      const tiles = document.querySelectorAll("[data-export]");
+      const icon = tile.querySelector(".export-icon");
+      const iconHtml = icon.innerHTML;
+      tiles.forEach(t => { t.disabled = true; });
+      icon.innerHTML = `<i class="bx bx-loader-alt spin"></i>`;
+
+      try {
+        for (const src of EXPORT_SCRIPTS[kind]) await loadScript(src);
+        const { blob, filename } = await window.DailyKathaExport[kind](buildReport());
+        await deliverFile(blob, filename, kind);
+      } catch (e) {
+        console.error(e);
+        showToast("Could not create the file. Check your connection and try again.", 3500);
+      } finally {
+        icon.innerHTML = iconHtml;
+        tiles.forEach(t => { t.disabled = false; });
+        exporting = false;
+      }
+    }
+
+    document.querySelectorAll("[data-export]").forEach(tile => {
+      tile.addEventListener("click", () => exportReport(tile.dataset.export, tile));
+    });
+
+    /* ---------- Customers ---------- */
+
+    function resetCustomerForm() {
+      editingCustomerId = null;
+      customerForm.reset();
+      customerFormTitle.innerHTML = `<i class="bx bx-user-plus"></i> Add Customer`;
+      customerSubmitBtn.innerHTML = `<i class="bx bx-plus"></i> Add Customer`;
+      customerCancelBtn.hidden = true;
+    }
+
+    function startEditCustomer(id) {
+      const customer = getCustomer(id);
+      if (!customer) return;
+
+      editingCustomerId = id;
+      customerName.value = customer.name;
+      customerAddress.value = customer.address;
+      customerPhone.value = customer.phone;
+
+      customerFormTitle.innerHTML = `<i class="bx bx-edit-alt"></i> Edit Customer`;
+      customerSubmitBtn.innerHTML = `<i class="bx bx-check"></i> Save Changes`;
+      customerCancelBtn.hidden = false;
+
+      customerFormCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      customerName.focus({ preventScroll: true });
+    }
+
+    function deleteCustomer(id) {
+      const customer = getCustomer(id);
+      if (!customer) return;
+
+      const count = transactions.filter(t => t.customerId === id).length;
+      const balance = customerBalance(id);
+
+      let message = `Delete ${customer.name}?`;
+      if (count) {
+        message = `Delete ${customer.name} and their ${plural(count, "transaction")}?`;
+        if (balance) message += `\n\nTheir balance of ${describeBalance(balance)} will be lost.`;
+        message += "\n\nThis cannot be undone.";
+      }
+
+      if (!confirm(message)) return;
+
+      customers = customers.filter(c => c.id !== id);
+      transactions = transactions.filter(t => t.customerId !== id);
+
+      if (editingCustomerId === id) resetCustomerForm();
+      if (editingTransactionId && !transactions.some(t => t.id === editingTransactionId)) {
+        resetTransactionForm();
+      }
+
+      saveData();
+      render();
+      showToast("Customer deleted.");
+    }
+
+    function showCustomerHistory(id) {
+      historyCustomerFilter.value = id;
+      historyPage = 1;
+      renderTransactions();
+      switchTab("historyTab");
     }
 
     customerForm.addEventListener("submit", (e) => {
@@ -777,7 +2942,9 @@
       }
 
       const duplicate = customers.some(c =>
-        c.name.toLowerCase() === name.toLowerCase() && c.phone === phone
+        c.id !== editingCustomerId &&
+        c.name.toLowerCase() === name.toLowerCase() &&
+        c.phone === phone
       );
 
       if (duplicate) {
@@ -785,132 +2952,341 @@
         return;
       }
 
-      customers.push({
-        id: makeId(),
-        name,
-        address,
-        phone,
-        createdAt: Date.now()
-      });
+      if (editingCustomerId) {
+        Object.assign(getCustomer(editingCustomerId), { name, address, phone });
+        showToast("Customer updated.");
+      } else {
+        customers.push({
+          id: makeId(),
+          name,
+          address,
+          phone,
+          createdAt: Date.now()
+        });
+        showToast("Customer added successfully.");
+      }
 
       saveData();
-      customerForm.reset();
-      renderCustomers();
-      showToast("Customer added successfully.");
+      resetCustomerForm();
+      render();
     });
+
+    customerCancelBtn.addEventListener("click", resetCustomerForm);
+    customerSearch.addEventListener("input", () => renderCustomers(balancesByCustomer()));
+
+    customerList.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+
+      const { action, id } = btn.dataset;
+      if (action === "history") showCustomerHistory(id);
+      if (action === "edit") startEditCustomer(id);
+      if (action === "delete") deleteCustomer(id);
+    });
+
+    /* ---------- Transactions ---------- */
+
+    function resetTransactionForm() {
+      editingTransactionId = null;
+      transactionForm.reset();
+      transactionDate.value = todayLocal();
+      setTransactionType("bill");
+
+      transactionFormTitle.innerHTML = `<i class="bx bx-plus-circle"></i> Add Transaction`;
+      transactionSubmitBtn.innerHTML = `<i class="bx bx-save"></i> Save Transaction`;
+      transactionCancelBtn.hidden = true;
+    }
+
+    function startEditTransaction(id) {
+      const t = transactions.find(t => t.id === id);
+      if (!t) return;
+
+      editingTransactionId = id;
+      customerSelect.value = t.customerId;
+      setTransactionType(t.type);
+      amount.value = (t.amountPaise / 100).toFixed(2);
+      paymentType.value = t.paymentType;
+      transactionDate.value = t.date;
+      notes.value = t.notes;
+
+      transactionFormTitle.innerHTML = `<i class="bx bx-edit-alt"></i> Edit Transaction`;
+      transactionSubmitBtn.innerHTML = `<i class="bx bx-check"></i> Update Transaction`;
+      transactionCancelBtn.hidden = false;
+
+      updateCustomerSummary();
+      switchTab("transactionsTab");
+    }
+
+    function deleteTransaction(id) {
+      const t = transactions.find(t => t.id === id);
+      if (!t) return;
+
+      const customer = getCustomer(t.customerId);
+      const kind = t.type === "bill" ? "bill" : "payment";
+      const message =
+        `Delete this ${kind} of ${money(t.amountPaise)}` +
+        `${customer ? ` for ${customer.name}` : ""} on ${formatDate(t.date)}?`;
+
+      if (!confirm(message)) return;
+
+      transactions = transactions.filter(t => t.id !== id);
+      if (editingTransactionId === id) resetTransactionForm();
+
+      saveData();
+      render();
+      showToast("Transaction deleted.");
+    }
 
     transactionForm.addEventListener("submit", (e) => {
       e.preventDefault();
 
       const customerId = customerSelect.value;
-      const amountValue = Number(amount.value);
+      const amountPaise = toPaise(amount.value);
 
       if (!customerId) {
         showToast("Please select a customer.");
         return;
       }
 
-      if (!amountValue || amountValue <= 0) {
+      if (!Number.isSafeInteger(amountPaise) || amountPaise <= 0) {
         showToast("Enter a valid amount.");
         return;
       }
 
-      const savedTransactionType = transactionType;
-
-      transactions.push({
-        id: makeId(),
-        customerId,
-        type: transactionType,
-        amount: amountValue,
-        paymentType: paymentType.value,
-        date: transactionDate.value,
-        notes: notes.value.trim(),
-        createdAt: Date.now()
-      });
-
-      saveData();
-
-      const selectedCustomer = customerId;
-      transactionForm.reset();
-      customerSelect.value = selectedCustomer;
-      transactionDate.value = new Date().toISOString().slice(0, 10);
-
-      setTransactionType("bill");
-      renderCustomers();
-      renderTransactions();
-      updateCustomerSummary();
-
-      showToast(savedTransactionType === "bill"
-        ? "Bill amount saved."
-        : "Receive amount saved.");
-    });
-
-    customerSelect.addEventListener("change", updateCustomerSummary);
-    historyCustomerFilter.addEventListener("change", renderTransactions);
-    billBtn.addEventListener("click", () => setTransactionType("bill"));
-    receiveBtn.addEventListener("click", () => setTransactionType("receive"));
-
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-    });
-
-    function switchTab(tabId) {
-      document.querySelectorAll(".tab").forEach(tab => {
-        tab.classList.toggle("active", tab.id === tabId);
-      });
-
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.tab === tabId);
-      });
-
-      if (tabId === "customersTab") {
-        pageTitle.textContent = "Add Customer";
-        pageSubtitle.textContent = "Save customer details for future billing.";
-      } else if (tabId === "transactionsTab") {
-        pageTitle.textContent = "Transactions";
-        pageSubtitle.textContent = "Record bills and received payments.";
-      } else {
-        pageTitle.textContent = "History";
-        pageSubtitle.textContent = "View your customer transaction history.";
-      }
-    }
-
-    window.deleteCustomer = function(id) {
-      const customer = getCustomer(id);
-      if (!customer) return;
-
-      const hasTransactions = transactions.some(t => t.customerId === id);
-
-      if (hasTransactions) {
-        showToast("Cannot delete a customer with transactions.");
+      if (!isValidDate(transactionDate.value)) {
+        showToast("Please pick a date.");
         return;
       }
 
-      if (!confirm(`Delete ${customer.name}?`)) return;
+      const details = {
+        customerId,
+        type: transactionType,
+        amountPaise,
+        paymentType: paymentType.value,
+        date: transactionDate.value,
+        notes: notes.value.trim()
+      };
 
-      customers = customers.filter(c => c.id !== id);
+      const wasEditing = Boolean(editingTransactionId);
+
+      if (wasEditing) {
+        const t = transactions.find(t => t.id === editingTransactionId);
+        Object.assign(t, details, { updatedAt: Date.now() });
+      } else {
+        transactions.push({ id: makeId(), ...details, createdAt: Date.now() });
+      }
+
       saveData();
-      renderCustomers();
+      resetTransactionForm();
+      render();
+
+      if (wasEditing) {
+        switchTab("historyTab");
+        showToast("Transaction updated.");
+      } else {
+        showToast(details.type === "bill" ? "Bill amount saved." : "Receive amount saved.");
+      }
+    });
+
+    transactionCancelBtn.addEventListener("click", () => {
+      resetTransactionForm();
+      updateCustomerSummary();
+      switchTab("historyTab");
+    });
+
+    transactionList.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+
+      const { action, id } = btn.dataset;
+      if (action === "edit") startEditTransaction(id);
+      if (action === "delete") deleteTransaction(id);
+    });
+
+    customerSelect.addEventListener("change", updateCustomerSummary);
+    historyCustomerFilter.addEventListener("change", () => {
+      historyPage = 1;
       renderTransactions();
-      showToast("Customer deleted.");
-    };
+    });
 
-    function makeId() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+    historyPager.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-page]");
+      if (!btn || btn.disabled) return;
+      historyPage = Number(btn.dataset.page);
+      renderTransactions();
+      historySummary.closest(".card").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    billBtn.addEventListener("click", () => setTransactionType("bill"));
+    receiveBtn.addEventListener("click", () => setTransactionType("receive"));
+
+    document.querySelectorAll("[data-tab]").forEach(btn => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    /* ---------- Backup & restore ---------- */
+
+    exportJsonBtn.addEventListener("click", () => {
+      const backup = {
+        format: BACKUP_FORMAT,
+        version: BACKUP_VERSION,
+        exportedAt: new Date().toISOString(),
+        customers,
+        transactions
+      };
+
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+
+      deliverFile(blob, `DailyKatha-Backup-${todayLocal()}.json`, "json", () => {
+        try {
+          localStorage.setItem(STORAGE_LAST_BACKUP, String(Date.now()));
+        } catch (e) {}
+        renderBackupStatus();
+      });
+    });
+
+    importBtn.addEventListener("click", () => importFile.click());
+
+    importFile.addEventListener("change", async () => {
+      const file = importFile.files[0];
+      importFile.value = "";
+      if (!file) return;
+
+      let backup;
+      try {
+        backup = JSON.parse(await file.text());
+      } catch (e) {
+        showToast("That file is not a valid backup.", 3500);
+        return;
+      }
+
+      if (!backup || backup.format !== BACKUP_FORMAT ||
+          !Array.isArray(backup.customers) || !Array.isArray(backup.transactions)) {
+        showToast("That file is not a Daily Katha backup.", 3500);
+        return;
+      }
+
+      const restoredCustomers = [];
+      const seenIds = new Set();
+      for (const c of backup.customers.map(normalizeCustomer)) {
+        if (c && !seenIds.has(c.id)) {
+          seenIds.add(c.id);
+          restoredCustomers.push(c);
+        }
+      }
+
+      const restoredTransactions = backup.transactions
+        .map(normalizeTransaction)
+        .filter(t => t && seenIds.has(t.customerId));
+
+      const skipped =
+        backup.customers.length - restoredCustomers.length +
+        backup.transactions.length - restoredTransactions.length;
+
+      const exportedAt = Date.parse(backup.exportedAt);
+      const message = [
+        `Restore this backup${exportedAt ? ` from ${formatDateTime(exportedAt)}` : ""}?`,
+        "",
+        `Backup: ${plural(restoredCustomers.length, "customer")}, ` +
+          `${plural(restoredTransactions.length, "transaction")}`,
+        `This device now: ${plural(customers.length, "customer")}, ` +
+          `${plural(transactions.length, "transaction")}`,
+        "",
+        "Everything currently on this device will be replaced."
+      ].join("\n");
+
+      if (!confirm(message)) return;
+
+      customers = restoredCustomers;
+      transactions = restoredTransactions;
+      resetCustomerForm();
+      resetTransactionForm();
+      historyCustomerFilter.value = "";
+      reportCustomer.value = "";
+
+      saveData();
+      render();
+      showToast(skipped
+        ? `Backup restored. ${skipped} invalid ${skipped === 1 ? "entry" : "entries"} skipped.`
+        : "Backup restored.", 3500);
+    });
+
+    /* ---------- Install & offline ---------- */
+
+    function isInstalled() {
+      return window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function renderInstall() {
+      const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+      if (isInstalled()) {
+        installCard.hidden = true;
+      } else if (deferredInstallPrompt) {
+        installCard.hidden = false;
+        installBtn.hidden = false;
+        installText.textContent =
+          "Add Daily Katha to your home screen. It opens like an app and works offline.";
+      } else if (isIos) {
+        installCard.hidden = false;
+        installBtn.hidden = true;
+        installText.textContent =
+          "In Safari, tap the Share button, then \"Add to Home Screen\".";
+      } else {
+        installCard.hidden = true;
+      }
     }
 
-    renderCustomers();
-    renderTransactions();
-    setTransactionType("bill");
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      renderInstall();
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      renderInstall();
+      showToast("Daily Katha installed.");
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      renderInstall();
+    });
+
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      });
+    }
+
+    // Ask the browser not to clear this site's data when the device runs low on space.
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(() => {});
+    }
+
+    /* ---------- Start ---------- */
+
+    // Saving right away converts any older rupee amounts to paise.
+    if (!storageBlocked) saveData();
+
+    resetCustomerForm();
+    resetTransactionForm();
+    render();
+    renderInstall();
+
+    // App shortcuts open a specific tab, e.g. index.html?tab=reportsTab
+    const startTab = new URLSearchParams(location.search).get("tab");
+    switchTab(TABS[startTab] ? startTab : "customersTab");
+
+    if (storageBlocked) {
+      showToast("This browser is blocking storage. Entries will not be saved.", 6000);
+    } else if (storageUnreadable) {
+      showToast("Some saved data could not be read. Restore a backup if anything is missing.", 6000);
+    }
   </script>
 </body>
 </html>
