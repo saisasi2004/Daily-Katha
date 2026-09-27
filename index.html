@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Daily Katha</title>
+
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #111827;
+      --primary-soft: #eef2ff;
+      --green: #15803d;
+      --green-soft: #dcfce7;
+      --red: #dc2626;
+      --red-soft: #fee2e2;
+      --shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding-bottom: 84px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 18px 16px 14px;
+      background: rgba(244, 246, 248, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .topbar p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      padding: 0 16px;
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+      animation: fade .18s ease;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .field {
+      margin-bottom: 13px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 650;
+      color: #374151;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 13px;
+      border: 1px solid #d6dae1;
+      border-radius: 13px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #64748b;
+      box-shadow: 0 0 0 3px rgba(100, 116, 139, .12);
+    }
+
+    .primary-btn {
+      width: 100%;
+      min-height: 49px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .primary-btn:active {
+      transform: scale(.99);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .segmented button {
+      min-height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #fff;
+      color: #4b5563;
+      font-weight: 700;
+    }
+
+    .segmented button.active.bill {
+      background: var(--red-soft);
+      color: var(--red);
+      border-color: #fecaca;
+    }
+
+    .segmented button.active.receive {
+      background: var(--green-soft);
+      color: var(--green);
+      border-color: #bbf7d0;
+    }
+
+    .customer-summary {
+      display: none;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+
+    .customer-summary.show {
+      display: block;
+    }
+
+    .customer-name {
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .customer-meta {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .balance-row {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #d8dee8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .balance-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .balance-value {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .balance-value.positive {
+      color: var(--red);
+    }
+
+    .balance-value.negative {
+      color: var(--green);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 28px 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .customer-item, .transaction-item {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .customer-item:first-child, .transaction-item:first-child {
+      padding-top: 0;
+    }
+
+    .customer-item:last-child, .transaction-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .item-title {
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .item-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .amount {
+      font-size: 15px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .amount.bill {
+      color: var(--red);
+    }
+
+    .amount.receive {
+      color: var(--green);
+    }
+
+    .delete-btn {
+      border: 0;
+      background: transparent;
+      color: var(--red);
+      padding: 7px 0 0;
+      font-size: 12px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      z-index: 30;
+      width: min(520px, 100%);
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.95);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      min-height: 56px;
+      border: 0;
+      border-radius: 15px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .nav-btn .icon {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .nav-btn.active {
+      background: #f1f5f9;
+      color: var(--primary);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 90px;
+      transform: translateX(-50%) translateY(15px);
+      z-index: 100;
+      width: calc(100% - 32px);
+      max-width: 480px;
+      padding: 12px 14px;
+      border-radius: 13px;
+      background: #111827;
+      color: #fff;
+      text-align: center;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 7px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1 id="pageTitle">Add Customer</h1>
+      <p id="pageSubtitle">Save customer details for future billing.</p>
+    </header>
+
+    <main>
+      <!-- TAB 1 -->
+      <section id="customersTab" class="tab active">
+        <div class="card">
+          <h2 class="section-title">Customer Details</h2>
+
+          <form id="customerForm">
+            <div class="field">
+              <label for="customerName">Name</label>
+              <input id="customerName" type="text" placeholder="Enter customer name" required />
+            </div>
+
+            <div class="field">
+              <label for="customerAddress">Address</label>
+              <textarea id="customerAddress" placeholder="Enter address"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="customerPhone">Phone Number</label>
+              <input id="customerPhone" type="tel" inputmode="numeric"
+                     placeholder="Enter phone number" maxlength="15" />
+            </div>
+
+            <button class="primary-btn" type="submit">+ Add Customer</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">Customers</h2>
+          <div id="customerList"></div>
+        </div>
+      </section>
+
+      <!-- TAB 2 -->
+      <section id="transactionsTab" class="tab">
+        <div class="card">
+          <h2 class="section-title">Add Transaction</h2>
+
+          <div class="field">
+            <label for="customerSelect">Select Customer</label>
+            <select id="customerSelect">
+              <option value="">Select a customer</option>
+            </select>
+          </div>
+
+          <div id="customerSummary" class="customer-summary">
+            <div class="customer-name" id="summaryName"></div>
+            <div class="customer-meta" id="summaryMeta"></div>
+
+            <div class="balance-row">
+              <span class="balance-label">Current balance</span>
+              <span class="balance-value" id="summaryBalance"></span>
+            </div>
+          </div>
+
+          <label>Transaction Type</label>
+          <div class="segmented">
+            <button type="button" id="billBtn" class="active bill">Bill Amount</button>
+            <button type="button" id="receiveBtn">Receive Amount</button>
+          </div>
+
+          <form id="transactionForm">
+            <div class="field">
+              <label for="amount">Amount</label>
+              <input id="amount" type="number" inputmode="decimal" min="0.01"
+                     step="0.01" placeholder="0.00" required />
+            </div>
+
+            <div class="field">
+              <label for="paymentType">Type of Payment</label>
+              <select id="paymentType">
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Card">Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="transactionDate">Date</label>
+              <input id="transactionDate" type="date" required />
+            </div>
+
+            <div class="field">
+              <label for="notes">Notes (optional)</label>
+              <input id="notes" type="text" placeholder="e.g. Monthly bill" />
+            </div>
+
+            <button class="primary-btn" type="submit">Save Transaction</button>
+          </form>
+        </div>
+
+      </section>
+
+      <!-- TAB 3 -->
+      <section id="historyTab" class="tab">
+        <div class="card">
+          <h2 class="section-title">Transaction History</h2>
+
+          <div class="field">
+            <label for="historyCustomerFilter">Filter by Customer</label>
+            <select id="historyCustomerFilter">
+              <option value="">All Customers</option>
+            </select>
+          </div>
+
+          <div id="transactionList"></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <div class="nav-inner">
+        <button class="nav-btn active" data-tab="customersTab">
+          <span class="icon">👤</span>
+          <span>Customers</span>
+        </button>
+
+        <button class="nav-btn" data-tab="transactionsTab">
+          <span class="icon">₹</span>
+          <span>Transactions</span>
+        </button>
+
+        <button class="nav-btn" data-tab="historyTab">
+          <span class="icon">🧾</span>
+          <span>History</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STORAGE_CUSTOMERS = "customer_ledger_customers_v1";
+    const STORAGE_TRANSACTIONS = "customer_ledger_transactions_v1";
+
+    let customers = JSON.parse(localStorage.getItem(STORAGE_CUSTOMERS) || "[]");
+    let transactions = JSON.parse(localStorage.getItem(STORAGE_TRANSACTIONS) || "[]");
+    let transactionType = "bill";
+
+    const customerForm = document.getElementById("customerForm");
+    const transactionForm = document.getElementById("transactionForm");
+
+    const customerName = document.getElementById("customerName");
+    const customerAddress = document.getElementById("customerAddress");
+    const customerPhone = document.getElementById("customerPhone");
+
+    const customerSelect = document.getElementById("customerSelect");
+    const amount = document.getElementById("amount");
+    const paymentType = document.getElementById("paymentType");
+    const transactionDate = document.getElementById("transactionDate");
+    const notes = document.getElementById("notes");
+
+    const customerSummary = document.getElementById("customerSummary");
+    const summaryName = document.getElementById("summaryName");
+    const summaryMeta = document.getElementById("summaryMeta");
+    const summaryBalance = document.getElementById("summaryBalance");
+
+    const customerList = document.getElementById("customerList");
+    const transactionList = document.getElementById("transactionList");
+    const historyCustomerFilter = document.getElementById("historyCustomerFilter");
+
+    const billBtn = document.getElementById("billBtn");
+    const receiveBtn = document.getElementById("receiveBtn");
+
+    const pageTitle = document.getElementById("pageTitle");
+    const pageSubtitle = document.getElementById("pageSubtitle");
+    const toast = document.getElementById("toast");
+
+    transactionDate.value = new Date().toISOString().slice(0, 10);
+
+    function saveData() {
+      localStorage.setItem(STORAGE_CUSTOMERS, JSON.stringify(customers));
+      localStorage.setItem(STORAGE_TRANSACTIONS, JSON.stringify(transactions));
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function money(value) {
+      return "₹" + Number(value).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function customerBalance(customerId) {
+      return transactions
+        .filter(t => t.customerId === customerId)
+        .reduce((balance, t) => {
+          return t.type === "bill"
+            ? balance + Number(t.amount)
+            : balance - Number(t.amount);
+        }, 0);
+    }
+
+    function getCustomer(customerId) {
+      return customers.find(c => c.id === customerId);
+    }
+
+    function formatDate(dateString) {
+      const d = new Date(dateString + "T00:00:00");
+      return d.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+    }
+
+    function renderCustomers() {
+      if (!customers.length) {
+        customerList.innerHTML = `
+          <div class="empty">
+            No customers added yet.<br>
+            Add your first customer above.
+          </div>
+        `;
+      } else {
+        customerList.innerHTML = customers
+          .slice()
+          .reverse()
+          .map(c => {
+            const balance = customerBalance(c.id);
+            const balanceText =
+              balance > 0 ? `${money(balance)} due` :
+              balance < 0 ? `${money(Math.abs(balance))} advance` :
+              "Settled";
+
+            return `
+              <div class="customer-item">
+                <div class="row">
+                  <div>
+                    <div class="item-title">${escapeHtml(c.name)}</div>
+                    <div class="item-sub">
+                      ${escapeHtml(c.phone || "No phone")}
+                      ${c.address ? " • " + escapeHtml(c.address) : ""}
+                    </div>
+                  </div>
+                  <div class="amount ${balance > 0 ? "bill" : balance < 0 ? "receive" : ""}">
+                    ${balance === 0 ? "₹0.00" : money(Math.abs(balance))}
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top:4px;">
+                  <div class="item-sub">${balanceText}</div>
+                  <button class="delete-btn" onclick="deleteCustomer('${c.id}')">Delete</button>
+                </div>
+              </div>
+            `;
+          }).join("");
+      }
+
+      renderCustomerSelect();
+      renderHistoryFilter();
+      renderTransactions();
+    }
+
+    function renderCustomerSelect() {
+      const current = customerSelect.value;
+
+      customerSelect.innerHTML = `
+        <option value="">Select a customer</option>
+        ${customers.map(c => `
+          <option value="${c.id}">
+            ${escapeHtml(c.name)}
+          </option>
+        `).join("")}
+      `;
+
+      if (customers.some(c => c.id === current)) {
+        customerSelect.value = current;
+      }
+
+      updateCustomerSummary();
+    }
+
+    function renderTransactions() {
+      const filterCustomerId = historyCustomerFilter ? historyCustomerFilter.value : "";
+      const filtered = transactions.filter(t =>
+        !filterCustomerId || t.customerId === filterCustomerId
+      );
+
+      if (!filtered.length) {
+        transactionList.innerHTML = `
+          <div class="empty">
+            No transactions found.
+          </div>
+        `;
+        return;
+      }
+
+      transactionList.innerHTML = filtered
+        .slice()
+        .sort((a, b) => new Date(b.date) - new Date(a.date) || b.createdAt - a.createdAt)
+        .map(t => {
+          const customer = getCustomer(t.customerId);
+          if (!customer) return "";
+
+          return `
+            <div class="transaction-item">
+              <div class="row">
+                <div>
+                  <div class="item-title">${escapeHtml(customer.name)}</div>
+                  <div class="item-sub">
+                    ${formatDate(t.date)} • ${escapeHtml(t.paymentType)}
+                    ${t.notes ? " • " + escapeHtml(t.notes) : ""}
+                  </div>
+                </div>
+
+                <div class="amount ${t.type}">
+                  ${t.type === "bill" ? "+" : "-"} ${money(t.amount)}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function renderHistoryFilter() {
+      if (!historyCustomerFilter) return;
+
+      const current = historyCustomerFilter.value;
+
+      historyCustomerFilter.innerHTML = `
+        <option value="">All Customers</option>
+        ${customers.map(c => `
+          <option value="${c.id}">${escapeHtml(c.name)}</option>
+        `).join("")}
+      `;
+
+      if (customers.some(c => c.id === current)) {
+        historyCustomerFilter.value = current;
+      } else {
+        historyCustomerFilter.value = "";
+      }
+    }
+
+    function updateCustomerSummary() {
+      const customer = getCustomer(customerSelect.value);
+
+      if (!customer) {
+        customerSummary.classList.remove("show");
+        return;
+      }
+
+      const balance = customerBalance(customer.id);
+
+      customerSummary.classList.add("show");
+      summaryName.textContent = customer.name;
+      summaryMeta.textContent =
+        [customer.phone, customer.address].filter(Boolean).join(" • ") || "Customer details";
+
+      summaryBalance.textContent =
+        balance > 0 ? `${money(balance)} due` :
+        balance < 0 ? `${money(Math.abs(balance))} advance` :
+        "₹0.00 settled";
+
+      summaryBalance.className =
+        "balance-value " + (balance > 0 ? "positive" : balance < 0 ? "negative" : "");
+    }
+
+    function setTransactionType(type) {
+      transactionType = type;
+
+      billBtn.classList.toggle("active", type === "bill");
+      billBtn.classList.toggle("bill", type === "bill");
+
+      receiveBtn.classList.toggle("active", type === "receive");
+      receiveBtn.classList.toggle("receive", type === "receive");
+    }
+
+    customerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = customerName.value.trim();
+      const address = customerAddress.value.trim();
+      const phone = customerPhone.value.trim();
+
+      if (!name) {
+        showToast("Please enter the customer name.");
+        return;
+      }
+
+      const duplicate = customers.some(c =>
+        c.name.toLowerCase() === name.toLowerCase() && c.phone === phone
+      );
+
+      if (duplicate) {
+        showToast("This customer already exists.");
+        return;
+      }
+
+      customers.push({
+        id: makeId(),
+        name,
+        address,
+        phone,
+        createdAt: Date.now()
+      });
+
+      saveData();
+      customerForm.reset();
+      renderCustomers();
+      showToast("Customer added successfully.");
+    });
+
+    transactionForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const customerId = customerSelect.value;
+      const amountValue = Number(amount.value);
+
+      if (!customerId) {
+        showToast("Please select a customer.");
+        return;
+      }
+
+      if (!amountValue || amountValue <= 0) {
+        showToast("Enter a valid amount.");
+        return;
+      }
+
+      const savedTransactionType = transactionType;
+
+      transactions.push({
+        id: makeId(),
+        customerId,
+        type: transactionType,
+        amount: amountValue,
+        paymentType: paymentType.value,
+        date: transactionDate.value,
+        notes: notes.value.trim(),
+        createdAt: Date.now()
+      });
+
+      saveData();
+
+      const selectedCustomer = customerId;
+      transactionForm.reset();
+      customerSelect.value = selectedCustomer;
+      transactionDate.value = new Date().toISOString().slice(0, 10);
+
+      setTransactionType("bill");
+      renderCustomers();
+      renderTransactions();
+      updateCustomerSummary();
+
+      showToast(savedTransactionType === "bill"
+        ? "Bill amount saved."
+        : "Receive amount saved.");
+    });
+
+    customerSelect.addEventListener("change", updateCustomerSummary);
+    historyCustomerFilter.addEventListener("change", renderTransactions);
+    billBtn.addEventListener("click", () => setTransactionType("bill"));
+    receiveBtn.addEventListener("click", () => setTransactionType("receive"));
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.toggle("active", tab.id === tabId);
+      });
+
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tabId);
+      });
+
+      if (tabId === "customersTab") {
+        pageTitle.textContent = "Add Customer";
+        pageSubtitle.textContent = "Save customer details for future billing.";
+      } else if (tabId === "transactionsTab") {
+        pageTitle.textContent = "Transactions";
+        pageSubtitle.textContent = "Record bills and received payments.";
+      } else {
+        pageTitle.textContent = "History";
+        pageSubtitle.textContent = "View your customer transaction history.";
+      }
+    }
+
+    window.deleteCustomer = function(id) {
+      const customer = getCustomer(id);
+      if (!customer) return;
+
+      const hasTransactions = transactions.some(t => t.customerId === id);
+
+      if (hasTransactions) {
+        showToast("Cannot delete a customer with transactions.");
+        return;
+      }
+
+      if (!confirm(`Delete ${customer.name}?`)) return;
+
+      customers = customers.filter(c => c.id !== id);
+      saveData();
+      renderCustomers();
+      renderTransactions();
+      showToast("Customer deleted.");
+    };
+
+    function makeId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    renderCustomers();
+    renderTransactions();
+    setTransactionType("bill");
+  </script>
+</body>
+</html>
